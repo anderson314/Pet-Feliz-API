@@ -4,7 +4,7 @@ namespace PetFelizApi.Models
 {
     public class EnderecoDogWalker
     {
-        public int IdEndDogW                { get; set; }
+        public int Id                       { get; set; }
         public EstadoBrasileiro Estado      { get; set; }
         public string Cidade                { get; set; }
         public string Bairro                { get; set; }

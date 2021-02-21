@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PetFelizApi.Models;
+using PetFelizApi.Models.Enuns;
 
 namespace PetFelizApi.Data
 {
@@ -11,6 +12,6 @@ namespace PetFelizApi.Data
         }   
 
         public DbSet<EnderecoDogWalker> EnderecoDogwalker { get; set; }
-        public DbSet<DogWalker> DogWalker { get; set; } 
+        public DbSet<DogWalker> DogWalker { get; set; }
     }
 }

@@ -13,8 +13,8 @@ namespace PetFelizApi.Controllers
         private static List<EnderecoDogWalker> endDogW = new List<EnderecoDogWalker>
         {
             new EnderecoDogWalker (),
-            new EnderecoDogWalker { IdEndDogW = 1, Estado = EstadoBrasileiro.SP, Cidade = "São Paulo", Bairro = "Vila Maria", Rua = "João Neves", NmrEndereco = "145" },
-            new EnderecoDogWalker { IdEndDogW = 2, Estado = EstadoBrasileiro.SP, Cidade = "São Paulo", Bairro = "Vila Guilherme", Rua = "Maria França", NmrEndereco = "236" }
+            new EnderecoDogWalker { Id = 1, Estado = EstadoBrasileiro.SP, Cidade = "São Paulo", Bairro = "Vila Maria", Rua = "João Neves", NmrEndereco = "145" },
+            new EnderecoDogWalker { Id = 2, Estado = EstadoBrasileiro.SP, Cidade = "São Paulo", Bairro = "Vila Guilherme", Rua = "Maria França", NmrEndereco = "236" }
         };
 
 
@@ -27,7 +27,7 @@ namespace PetFelizApi.Controllers
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            return Ok(endDogW.FirstOrDefault(pegarPorId => pegarPorId.IdEndDogW == id));
+            return Ok(endDogW.FirstOrDefault(pegarPorId => pegarPorId.Id == id));
         }
     }
 }
