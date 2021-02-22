@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PetFelizApi.Data;
 
 namespace PetFelizApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210222205511_TableCao")]
+    partial class TableCao
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,15 +40,10 @@ namespace PetFelizApi.Migrations
                     b.Property<int>("Porte")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ProprietarioId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Raca")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ProprietarioId");
 
                     b.ToTable("Cao");
                 });
@@ -165,16 +162,10 @@ namespace PetFelizApi.Migrations
                     b.Property<string>("NmrEndereco")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ProprietarioId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Rua")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ProprietarioId")
-                        .IsUnique();
 
                     b.ToTable("EnderProprietario");
                 });
@@ -240,26 +231,12 @@ namespace PetFelizApi.Migrations
                     b.Property<double>("LongitudeProp")
                         .HasColumnType("float");
 
-                    b.Property<int?>("ProprietarioId")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("VlTotal")
                         .HasColumnType("decimal(4,2)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProprietarioId");
-
                     b.ToTable("SolicitacaoServico");
-                });
-
-            modelBuilder.Entity("PetFelizApi.Models.Cao", b =>
-                {
-                    b.HasOne("PetFelizApi.Models.Proprietario", "Proprietario")
-                        .WithMany("Caes")
-                        .HasForeignKey("ProprietarioId");
-
-                    b.Navigation("Proprietario");
                 });
 
             modelBuilder.Entity("PetFelizApi.Models.DogWalker", b =>
@@ -269,35 +246,6 @@ namespace PetFelizApi.Migrations
                         .HasForeignKey("EndDogWalkerId");
 
                     b.Navigation("EndDogWalker");
-                });
-
-            modelBuilder.Entity("PetFelizApi.Models.EnderecoProprietario", b =>
-                {
-                    b.HasOne("PetFelizApi.Models.Proprietario", "Proprietario")
-                        .WithOne("Endereco")
-                        .HasForeignKey("PetFelizApi.Models.EnderecoProprietario", "ProprietarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Proprietario");
-                });
-
-            modelBuilder.Entity("PetFelizApi.Models.SolicitacaoServico", b =>
-                {
-                    b.HasOne("PetFelizApi.Models.Proprietario", "Proprietario")
-                        .WithMany("Solicitacoes")
-                        .HasForeignKey("ProprietarioId");
-
-                    b.Navigation("Proprietario");
-                });
-
-            modelBuilder.Entity("PetFelizApi.Models.Proprietario", b =>
-                {
-                    b.Navigation("Caes");
-
-                    b.Navigation("Endereco");
-
-                    b.Navigation("Solicitacoes");
                 });
 #pragma warning restore 612, 618
         }

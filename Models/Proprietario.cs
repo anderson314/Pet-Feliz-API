@@ -10,8 +10,8 @@ namespace PetFelizApi.Models
     {
         public int Id                                   { get; set; }
         public TipoConta TipoConta                      { get; set; }
-        
-
+        [JsonIgnore]
+        public EnderecoProprietario Endereco            { get; set; }
         public string Nome                              { get; set; }
         public DateTime DataNascimento                  { get; set; }
         public Byte[] FotoPerfil                        { get; set; }
@@ -21,7 +21,7 @@ namespace PetFelizApi.Models
         
         [NotMapped]
         public string PasswordString                    { get; set; }
-        
         public List<Cao> Caes                           { get; set; }
+        public List<SolicitacaoServico> Solicitacoes    { get; set; }
     }
 }

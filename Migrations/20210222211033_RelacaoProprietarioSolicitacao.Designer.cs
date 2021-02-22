@@ -10,8 +10,8 @@ using PetFelizApi.Data;
 namespace PetFelizApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210222200424_RelacaoProprietarioCao")]
-    partial class RelacaoProprietarioCao
+    [Migration("20210222211033_RelacaoProprietarioSolicitacao")]
+    partial class RelacaoProprietarioSolicitacao
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -236,10 +236,15 @@ namespace PetFelizApi.Migrations
                     b.Property<double>("LongitudeProp")
                         .HasColumnType("float");
 
+                    b.Property<int?>("ProprietarioId")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("VlTotal")
                         .HasColumnType("decimal(4,2)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ProprietarioId");
 
                     b.ToTable("SolicitacaoServico");
                 });
@@ -262,9 +267,20 @@ namespace PetFelizApi.Migrations
                     b.Navigation("EndDogWalker");
                 });
 
+            modelBuilder.Entity("PetFelizApi.Models.SolicitacaoServico", b =>
+                {
+                    b.HasOne("PetFelizApi.Models.Proprietario", "Proprietario")
+                        .WithMany("Solicitacoes")
+                        .HasForeignKey("ProprietarioId");
+
+                    b.Navigation("Proprietario");
+                });
+
             modelBuilder.Entity("PetFelizApi.Models.Proprietario", b =>
                 {
                     b.Navigation("Caes");
+
+                    b.Navigation("Solicitacoes");
                 });
 #pragma warning restore 612, 618
         }

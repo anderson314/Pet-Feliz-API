@@ -2,24 +2,24 @@
 
 namespace PetFelizApi.Migrations
 {
-    public partial class RelacaoProprietarioCao : Migration
+    public partial class RelacaoProprietarioSolicitacao : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<int>(
                 name: "ProprietarioId",
-                table: "Cao",
+                table: "SolicitacaoServico",
                 type: "int",
-                nullable: true);
+                nullable: false);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Cao_ProprietarioId",
-                table: "Cao",
+                name: "IX_SolicitacaoServico_ProprietarioId",
+                table: "SolicitacaoServico",
                 column: "ProprietarioId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Cao_Proprietario_ProprietarioId",
-                table: "Cao",
+                name: "FK_SolicitacaoServico_Proprietario_ProprietarioId",
+                table: "SolicitacaoServico",
                 column: "ProprietarioId",
                 principalTable: "Proprietario",
                 principalColumn: "Id",
@@ -29,16 +29,16 @@ namespace PetFelizApi.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Cao_Proprietario_ProprietarioId",
-                table: "Cao");
+                name: "FK_SolicitacaoServico_Proprietario_ProprietarioId",
+                table: "SolicitacaoServico");
 
             migrationBuilder.DropIndex(
-                name: "IX_Cao_ProprietarioId",
-                table: "Cao");
+                name: "IX_SolicitacaoServico_ProprietarioId",
+                table: "SolicitacaoServico");
 
             migrationBuilder.DropColumn(
                 name: "ProprietarioId",
-                table: "Cao");
+                table: "SolicitacaoServico");
         }
     }
 }

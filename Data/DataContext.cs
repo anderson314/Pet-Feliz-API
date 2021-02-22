@@ -16,7 +16,7 @@ namespace PetFelizApi.Data
         public DbSet<Proprietario> Proprietario { get; set; }
         public DbSet<EnderecoProprietario> EnderProprietario { get; set; }
         public DbSet<SolicitacaoServico> SolicitacaoServico { get; set; }
-        public DbSet<Cao> Cao                               { get; set; }
+        public DbSet<Cao> Cao      { get; set; }
         
     }
 }

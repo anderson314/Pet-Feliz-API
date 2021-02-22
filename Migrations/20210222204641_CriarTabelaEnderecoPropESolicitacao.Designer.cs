@@ -10,8 +10,8 @@ using PetFelizApi.Data;
 namespace PetFelizApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210222195315_ServicoProprietarioCaoEnder")]
-    partial class ServicoProprietarioCaoEnder
+    [Migration("20210222204641_CriarTabelaEnderecoPropESolicitacao")]
+    partial class CriarTabelaEnderecoPropESolicitacao
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,33 +20,6 @@ namespace PetFelizApi.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.3")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("PetFelizApi.Models.Cao", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("Idade")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Nome")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Peso")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Porte")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Raca")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Cao");
-                });
 
             modelBuilder.Entity("PetFelizApi.Models.DogWalker", b =>
                 {
