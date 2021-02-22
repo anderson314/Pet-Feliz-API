@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using PetFelizApi.Models.Enuns;
 
@@ -31,7 +32,8 @@ namespace PetFelizApi.Models
         public Boolean Disponivel               { get; set; }
         public Boolean AceitaCartao             { get; set; }   
         public Double LatitudeDW               { get; set; }       
-        public Double LongitudeDW              { get; set; }         
+        public Double LongitudeDW              { get; set; } 
+              
 
     }
 }

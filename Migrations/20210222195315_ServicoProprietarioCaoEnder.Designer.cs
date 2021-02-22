@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PetFelizApi.Data;
 
 namespace PetFelizApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210222195315_ServicoProprietarioCaoEnder")]
+    partial class ServicoProprietarioCaoEnder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,15 +40,10 @@ namespace PetFelizApi.Migrations
                     b.Property<int>("Porte")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ProprietarioId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Raca")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ProprietarioId");
 
                     b.ToTable("Cao");
                 });
@@ -242,15 +239,6 @@ namespace PetFelizApi.Migrations
                     b.ToTable("SolicitacaoServico");
                 });
 
-            modelBuilder.Entity("PetFelizApi.Models.Cao", b =>
-                {
-                    b.HasOne("PetFelizApi.Models.Proprietario", "Proprietario")
-                        .WithMany("Caes")
-                        .HasForeignKey("ProprietarioId");
-
-                    b.Navigation("Proprietario");
-                });
-
             modelBuilder.Entity("PetFelizApi.Models.DogWalker", b =>
                 {
                     b.HasOne("PetFelizApi.Models.EnderecoDogWalker", "EndDogWalker")
@@ -258,11 +246,6 @@ namespace PetFelizApi.Migrations
                         .HasForeignKey("EndDogWalkerId");
 
                     b.Navigation("EndDogWalker");
-                });
-
-            modelBuilder.Entity("PetFelizApi.Models.Proprietario", b =>
-                {
-                    b.Navigation("Caes");
                 });
 #pragma warning restore 612, 618
         }
