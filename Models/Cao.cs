@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using PetFelizApi.Models.Enuns;
 
 namespace PetFelizApi.Models
@@ -11,5 +12,6 @@ namespace PetFelizApi.Models
         public string Nome                  { get; set; }
         public string Raca                  { get; set; }
         public int  Peso                    { get; set; }
+        
     }
 }

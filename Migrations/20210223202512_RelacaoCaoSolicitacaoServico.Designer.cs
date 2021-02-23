@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PetFelizApi.Data;
 
 namespace PetFelizApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210223202512_RelacaoCaoSolicitacaoServico")]
+    partial class RelacaoCaoSolicitacaoServico
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -237,9 +239,6 @@ namespace PetFelizApi.Migrations
                     b.Property<DateTime>("DataSolicitacao")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("EnderecoProprietarioId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Estado")
                         .HasColumnType("int");
 
@@ -265,8 +264,6 @@ namespace PetFelizApi.Migrations
                         .HasColumnType("decimal(4,2)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("EnderecoProprietarioId");
 
                     b.HasIndex("ProprietarioId");
 
@@ -323,15 +320,9 @@ namespace PetFelizApi.Migrations
 
             modelBuilder.Entity("PetFelizApi.Models.SolicitacaoServico", b =>
                 {
-                    b.HasOne("PetFelizApi.Models.EnderecoProprietario", "EnderecoProprietario")
-                        .WithMany()
-                        .HasForeignKey("EnderecoProprietarioId");
-
                     b.HasOne("PetFelizApi.Models.Proprietario", "Proprietario")
                         .WithMany("Solicitacoes")
                         .HasForeignKey("ProprietarioId");
-
-                    b.Navigation("EnderecoProprietario");
 
                     b.Navigation("Proprietario");
                 });
