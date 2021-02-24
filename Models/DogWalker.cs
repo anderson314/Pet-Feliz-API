@@ -33,6 +33,8 @@ namespace PetFelizApi.Models
         public Boolean AceitaCartao             { get; set; }   
         public Double LatitudeDW               { get; set; }       
         public Double LongitudeDW              { get; set; } 
+
+        public List<SolicitacaoServico> Solicitacoes { get; set; }
               
 
     }

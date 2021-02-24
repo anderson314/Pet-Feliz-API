@@ -9,6 +9,7 @@ namespace PetFelizApi.Models
     {
         public int Id                               { get; set; }
         public Proprietario Proprietario            { get; set; }
+        public DogWalker DogWalker                  { get; set; }
         public EnderecoProprietario EnderecoProprietario    { get; set; }
         public List<CaoSolicitacao> CaoSolicitacoes  { get; set; }
         public EstadoSolicitacao Estado            { get; set; }

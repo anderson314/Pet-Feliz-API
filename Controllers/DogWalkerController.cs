@@ -23,7 +23,7 @@ namespace PetFelizApi.Controllers
         
 
         //Método responsável por Cadastrar um Dog Walker
-        [HttpPost("CadastrarDogWalkers")]
+        [HttpPost]
         public IActionResult CadastrarDogWalker(DogWalker novoDogWalker)
         {
             _context.DogWalker.Add(novoDogWalker);
