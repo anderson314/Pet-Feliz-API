@@ -14,7 +14,7 @@ namespace PetFelizApi.Models
         public string Sobre { get; set; }
         public string Preferencias { get; set; }
 
-        [Column (TypeName = "decimal(3, 2)")]
+        [Column (TypeName = "decimal(4,2)")]
         public decimal ValorServico { get; set; }
         public Boolean AceitaCartao { get; set; }
         

@@ -20,6 +20,10 @@ namespace PetFelizApi.Controllers
             //Todo usuário cadastrado receberá valor não disponível
             novoUsuario.Disponivel = false;
 
+            //Pegar data atual e colocá-la no JSON
+            DateTime data = DateTime.Today;
+            novoUsuario.DataCadastro = data;
+
             await _context.Usuario.AddAsync(novoUsuario);
             await _context.SaveChangesAsync();
 
@@ -27,6 +31,7 @@ namespace PetFelizApi.Controllers
 
             return Ok(usuarios);
         }
+
 
         //Método para listar proprietários
         [HttpGet("Proprietarios")]
@@ -38,6 +43,19 @@ namespace PetFelizApi.Controllers
 
             return Ok(Proprietarios);
         }
+
+        //Listar Dog Walkers - Página de localizar Dog Walkers
+        [HttpGet("DogWalkers")]
+        public async Task<IActionResult> listarDogWalkers()
+        {
+            List<Usuario> dogWalkers = await _context.Usuario
+                .Include(valor => valor.ServicoDogWalker)
+                .Where(tipoConta => tipoConta.TipoConta == TipoConta.DogWalker)
+                .ToListAsync();
+
+            return Ok(dogWalkers);
+        }
+
 
         //Deletar
         [HttpDelete]
