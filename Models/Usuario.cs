@@ -16,6 +16,8 @@ namespace PetFelizApi.Models
        public string WhatsApp   { get; set; }
        public List<Cao> Caes        { get; set; }
        public Boolean Disponivel { get; set; }
+       //public List<Servico> Servicos { get; set; }
+       public List<UsuariosServico> Servicos { get; set; }
        public InformacoesServicoDogWalker ServicoDogWalker { get; set; }
        public Double Latitude { get; set; }
        public Double Longitude { get; set; }
