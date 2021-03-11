@@ -8,11 +8,12 @@ namespace PetFelizApi.Models
     public class Servico
     {
         public int Id { get; set; }
+        public int ProprietarioId { get; set; }
         public EstadoSolicitacao Estado { get; set; }
-        public DateTime DataSolicitacao { get; set; }
-        public DateTime HoraSolicitacao { get; set; }
-        public DateTime HoraInicio { get; set; }
-        public DateTime HoraTermino { get; set; }
+        public string DataSolicitacao { get; set; }
+        public string HoraSolicitacao { get; set; }
+        public string HoraInicio { get; set; }
+        public string HoraTermino { get; set; }
 
         [Column (TypeName = "decimal(5,2)")]
         public Decimal ValorTotal { get; set; }

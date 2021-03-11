@@ -17,7 +17,9 @@ namespace PetFelizApi.Controllers
         public async Task<IActionResult> cadastrarCaoAsync(Cao novoCao)
         {
 
-            novoCao.Proprietario = await _context.Usuario.FirstOrDefaultAsync(prop => prop.Id == 1);
+            int idProp = 3;
+
+            novoCao.Proprietario = await _context.Usuario.FirstOrDefaultAsync(prop => prop.Id == idProp);
 
             await _context.Cao.AddAsync(novoCao);
             await _context.SaveChangesAsync();
