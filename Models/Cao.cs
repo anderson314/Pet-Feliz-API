@@ -10,7 +10,8 @@ namespace PetFelizApi.Models
         public string Raca { get; set; }
         public IdadeCao Idade { get; set; }
         public PorteCao Porte { get; set; }
-        public string Peso        { get; set; }
+        public PesoCao Peso { get; set; }
+        public int PesoId { get; set; }
         public Usuario Proprietario { get; set; }
     }
 }

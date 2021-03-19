@@ -26,6 +26,7 @@ namespace PetFelizApi.Data
         }
 
         public DbSet<CaoServico> CaesServico { get ;set; }
+        public DbSet<PesoCao> PesoCao { get; set; }
         
     }
 }

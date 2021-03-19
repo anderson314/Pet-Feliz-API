@@ -48,6 +48,10 @@ namespace PetFelizApi.Controllers
         [HttpGet("DogWalkers")]
         public async Task<IActionResult> listarDogWalkers()
         {
+            //Ideias
+            //Aplicar um where para buscar o dog walker mais proximo, através da latitude e longitude
+            //Busca será feita pelo token
+
             List<Usuario> dogWalkers = await _context.Usuario
                 .Include(valor => valor.ServicoDogWalker)
                 .Where(tipoConta => tipoConta.TipoConta == TipoConta.DogWalker)
