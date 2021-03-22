@@ -15,6 +15,7 @@ namespace PetFelizApi.Controllers
     public class ServicoController : ControllerBase
     {
         
+        //Nome : Solicitar servico
         //OBS: O Id do proprietário terá de ser mandado na requisição
         //O proprietário deverá ser adicionado primeiro
         [HttpPost("Solicitar")]
@@ -45,8 +46,9 @@ namespace PetFelizApi.Controllers
             return Ok(servicos);
         }
 
-        //Proprietário e Dog Walker
-        //Listar os Servicos Gerais
+         // Nome : Listar serviços gerais
+        // Atores : Proprietário e Dog Walker
+        // OBS : nenhuma
         [HttpGet("ListarServicosGerais")]
         public async Task<IActionResult> listarServicosGerais()
         {
@@ -61,8 +63,9 @@ namespace PetFelizApi.Controllers
             return Ok(servicosGerais);
         }
 
-        //Proprietário e Dog Walker
-        //Listar os Servicos Finalizados
+         // Nome : Listar serviços finalizados
+        // Atores : Proprietário e Dog Walker
+        // OBS : nenhuma
         [HttpGet("ListarServicosFinalizados")]
         public async Task<IActionResult> listarServicosFinalizados()
         {
@@ -76,7 +79,7 @@ namespace PetFelizApi.Controllers
 
         
         //Nome : Cancelar Servico
-        //Atores: proprietário
+        //Atore : proprietário
         //OBS: O id DEVE vir pela url
         [HttpPut("Cancelar/{id}")]
         public async Task<IActionResult> cancelarServico(int id)
@@ -109,7 +112,7 @@ namespace PetFelizApi.Controllers
         
 
         // Nome : Iniciar Servico
-        // Atores : Proprietário
+        // Atore : Proprietário
         // OBS : O id DEVE vir pela url
         [HttpPut("Iniciar/{id}")]
         public async Task<IActionResult> iniciarServico(int id)
@@ -140,7 +143,7 @@ namespace PetFelizApi.Controllers
 
 
         // Nome : Finalizar Servico
-        // Atores : Proprietário
+        // Atore : Proprietário
         // OBS : O id DEVE vir pela url
         [HttpPut("FinalizarServico/{id}")]
         public async Task<IActionResult> finalizarServico(int id)
@@ -165,6 +168,50 @@ namespace PetFelizApi.Controllers
             return Ok(servico);
         }
 
+        // Nome : Aceitar Servico
+        // Atore : Dog Walker
+        // OBS : O id DEVE vir pela url
+        [HttpPut("AceitarServico/{id}")]
+        public async Task<IActionResult> aceitarServico(int id)
+        {
+            //Posteriormente, verificar o usuario pelo token
+
+            int idServico = id;
+            Servico servico = await _context.Servico.FirstOrDefaultAsync(id => id.Id == idServico);
+            
+            if(servico.Estado != EstadoSolicitacao.Solicitado)
+                return BadRequest("Não foi possível iniciar o serviço.");
+
+            servico.Estado = EstadoSolicitacao.Aceito;
+
+            _context.Servico.Update(servico);
+            await _context.SaveChangesAsync();
+
+            return Ok(servico);
+        }
+
+        // Nome : Recusar Servico
+        // Atore : Dog Walker
+        // OBS : O id DEVE vir pela url
+        [HttpPut("RecusarServico/{id}")]
+        public async Task<IActionResult> recusarServico(int id)
+        {
+            //Posteriormente, verificar o usuario pelo token
+
+            int idServico = id;
+            Servico servico = await _context.Servico.FirstOrDefaultAsync(id => id.Id == idServico);
+            
+            if(servico.Estado != EstadoSolicitacao.Solicitado)
+                return BadRequest("Não foi possível recusar o serviço.");
+
+            servico.Estado = EstadoSolicitacao.Recusado;
+
+            _context.Servico.Update(servico);
+            await _context.SaveChangesAsync();
+
+            return Ok(servico);
+        }
+        
 
 
         private readonly DataContext _context;
