@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PetFelizApi.Data;
 
 namespace PetFelizApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210322203142_ProperiedadeSenha")]
+    partial class ProperiedadeSenha
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,29 +68,6 @@ namespace PetFelizApi.Migrations
                     b.HasIndex("ServicoId");
 
                     b.ToTable("CaesServico");
-                });
-
-            modelBuilder.Entity("PetFelizApi.Models.Curso", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("AnoConclusao")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("DogWalkerId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Nome")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DogWalkerId");
-
-                    b.ToTable("Curso");
                 });
 
             modelBuilder.Entity("PetFelizApi.Models.InformacoesServicoDogWalker", b =>
@@ -277,15 +256,6 @@ namespace PetFelizApi.Migrations
                     b.Navigation("Servico");
                 });
 
-            modelBuilder.Entity("PetFelizApi.Models.Curso", b =>
-                {
-                    b.HasOne("PetFelizApi.Models.Usuario", "DogWalker")
-                        .WithMany("Cursos")
-                        .HasForeignKey("DogWalkerId");
-
-                    b.Navigation("DogWalker");
-                });
-
             modelBuilder.Entity("PetFelizApi.Models.InformacoesServicoDogWalker", b =>
                 {
                     b.HasOne("PetFelizApi.Models.Usuario", "DogWalker")
@@ -331,8 +301,6 @@ namespace PetFelizApi.Migrations
             modelBuilder.Entity("PetFelizApi.Models.Usuario", b =>
                 {
                     b.Navigation("Caes");
-
-                    b.Navigation("Cursos");
 
                     b.Navigation("ServicoDogWalker");
 

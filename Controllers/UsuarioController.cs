@@ -14,9 +14,20 @@ namespace PetFelizApi.Controllers
     [Route("[controller]")]
     public class UsuarioController : ControllerBase
     {
-        [HttpPost]
+        [HttpPost("Cadastrar")]
         public async Task<IActionResult> cadastrarUsuarioAsync(Usuario novoUsuario)
         {
+            //Verifica se o usuário já existe.
+            if(await UsuarioExiste(novoUsuario.Email))
+                return BadRequest("Email já cadastrado");
+
+            CriarPasswordHash(novoUsuario.PasswordString, out byte[] passwordHash, out byte[] passwordSalt);
+
+            novoUsuario.PasswordString = string.Empty;
+            novoUsuario.PasswordHash = passwordHash;
+            novoUsuario.PasswordSalt = passwordSalt;
+
+
             //Todo usuário cadastrado receberá valor não disponível
             novoUsuario.Disponivel = false;
 
@@ -31,6 +42,30 @@ namespace PetFelizApi.Controllers
 
             return Ok(usuarios);
         }
+
+        [HttpPost("Autenticar")]
+        public async Task<IActionResult> AutenticarUsuario(Usuario credenciaisUsuario)
+        {
+            //Busca o usuário através do email
+            Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(email => 
+                email.Email.ToLower().Equals(credenciaisUsuario.Email.ToLower()));
+
+            if(usuario == null)
+            {
+                return BadRequest("O email digitado não existe.");
+            }
+            else if(!VerificarPasswordHash(credenciaisUsuario.PasswordString, 
+                                            usuario.PasswordHash, usuario.PasswordSalt))
+            {
+                return BadRequest("Senha incorreta.");
+            }
+            else
+            {
+                return Ok(usuario.Id);
+            }
+
+        }
+
 
 
         //Método para listar proprietários
@@ -76,6 +111,46 @@ namespace PetFelizApi.Controllers
 
             return Ok(mensagem);
         }
+
+
+        
+        //Algoritmo de criação de Hash e Salt
+        private void CriarPasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        {
+            using (var hmac = new System.Security.Cryptography.HMACSHA512())
+            {
+                passwordSalt = hmac.Key;
+                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            }
+        }
+
+        //Método que verificará se usuário já existe
+        public async Task<bool> UsuarioExiste(string email)
+        {
+            if(await _context.Usuario.AnyAsync(e => e.Email.ToLower() == email.ToLower()))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        //Verificará se a senha digitada pelo usuário, no login, estiver certa
+        private bool VerificarPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+        {
+            using(var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt))
+            {   
+                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+                for(int i=0; i < computedHash.Length; i++)
+                {
+                    if(computedHash[i] != passwordHash[i])
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+    
 
         private readonly DataContext _context;
         public UsuarioController(DataContext context)
