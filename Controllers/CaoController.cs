@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using PetFelizApi.Data;
 using PetFelizApi.Models;
 using PetFelizApi.Models.Enuns;
@@ -16,16 +19,25 @@ namespace PetFelizApi.Controllers
         [HttpPost]
         public async Task<IActionResult> cadastrarCaoAsync(Cao novoCao)
         {
-            //Posteriormente, pegar o ID pelo token
+            //Busca o usuário de acordo com o token
+            Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(prop => prop.Id == PegarIdUsuarioToken());
 
-            int idProp = 3;
+            if(usuario.TipoConta == TipoConta.DogWalker)
+            {
+                return BadRequest("Um Dog Walker não pode ter cães.");
+            }
 
-            novoCao.Proprietario = await _context.Usuario.FirstOrDefaultAsync(prop => prop.Id == idProp);
+            //Busca o peso de acordo com o Id
+            int idPesoCao = novoCao.PesoId;
+            PesoCao pesoCao = await _context.PesoCao.FirstOrDefaultAsync(pesoId => pesoId.Id == idPesoCao);
+
+            novoCao.Proprietario = usuario;
+            novoCao.Peso = pesoCao;
 
             await _context.Cao.AddAsync(novoCao);
             await _context.SaveChangesAsync();
 
-            List<Cao> caes = await _context.Cao.ToListAsync();
+            List<Cao> caes = await _context.Cao.Where(c => c.Proprietario == usuario).ToListAsync();
 
             return Ok(caes);
         }
@@ -33,7 +45,7 @@ namespace PetFelizApi.Controllers
         [HttpGet]
         public async Task<IActionResult> listarCaesProprietario()
         {
-            Usuario Proprietario = await _context.Usuario.FirstOrDefaultAsync(prop => prop.Id == 3);
+            Usuario Proprietario = await _context.Usuario.FirstOrDefaultAsync(prop => prop.Id == PegarIdUsuarioToken());
 
             List<Cao> Caes = await _context.Cao.Where(propri => propri.Proprietario == Proprietario)
                 .Include(peso => peso.Peso)
@@ -43,25 +55,36 @@ namespace PetFelizApi.Controllers
         }  
 
 
-        [HttpDelete]
-        public async Task<IActionResult> deletarCao()
+        [HttpDelete("DeletarCao/{idCao}")]
+        public async Task<IActionResult> deletarCao(int idCao)
         {
-            Usuario proprietario = await _context.Usuario.FirstOrDefaultAsync(user => user.Id == 1);
+            Usuario proprietario = await _context.Usuario.FirstOrDefaultAsync(user => user.Id == PegarIdUsuarioToken());
 
-            Cao cao = await _context.Cao.Where(prop => prop.Proprietario == proprietario).FirstOrDefaultAsync();
+            Cao cao = await _context.Cao.FirstOrDefaultAsync(it => it.Id == idCao);
+
+            if(cao.Proprietario != proprietario)
+            {
+                BadRequest("O usuário logado não pode deletar este cão.");
+            }
 
             _context.Remove(cao);
             await _context.SaveChangesAsync();
 
-            string mensagem = "Cão removido";
+            return Ok("Cão removido.");
+        }
 
-            return Ok(mensagem);
+        //Retorna o Id do usuário logado
+        private int PegarIdUsuarioToken()
+        {
+            return int.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
         }
 
         private readonly DataContext _context;
-        public CaoController(DataContext context)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public CaoController(DataContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
 
     }

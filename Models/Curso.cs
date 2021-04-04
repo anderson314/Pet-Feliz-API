@@ -7,6 +7,6 @@ namespace PetFelizApi.Models
         public int Id { get; set; }
         public string Nome { get; set; }
         public string AnoConclusao { get; set; }
-        public Usuario DogWalker { get; set; }
+        public InformacoesServicoDogWalker InfoServDogW { get; set; }
     }
 }

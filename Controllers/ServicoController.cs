@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PetFelizApi.Data;
@@ -21,12 +23,15 @@ namespace PetFelizApi.Controllers
         [HttpPost("Solicitar")]
         public async Task<IActionResult> solicitarServico(Servico novoServico)
         {
-            //Selecionar o Id do usuário no Banco. Posteriormente, pegar pelo token de sessão
-            // Buscar o Id do proprietário que está fazendo a solicitação
-            int IdProp = 3;
+
+            Usuario Proprietario = await _context.Usuario.FirstOrDefaultAsync(u => u.Id == PegarIdUsuarioToken());
+
+            //Verifica se o usuário que está fazendo a solicitação é um Dog Walker
+            if (Proprietario.TipoConta == TipoConta.DogWalker)
+                return BadRequest("O Dog Walker não pode fazer uma solicitação de serviço");
 
             //Guarda o Id do Proprietário que está fazendo a solicitação
-            novoServico.ProprietarioId = IdProp;
+            novoServico.ProprietarioId = PegarIdUsuarioToken();
 
             DateTime dataAtual = DateTime.Today;
             DateTime horaAtual = DateTime.Now;
@@ -41,12 +46,10 @@ namespace PetFelizApi.Controllers
             await _context.Servico.AddAsync(novoServico);
             await _context.SaveChangesAsync();
 
-            List<Servico> servicos = await _context.Servico.ToListAsync();
-
-            return Ok(servicos);
+            return Ok(novoServico);
         }
 
-         // Nome : Listar serviços gerais
+        // Nome : Listar serviços gerais
         // Atores : Proprietário e Dog Walker
         // OBS : nenhuma
         [HttpGet("ListarServicosGerais")]
@@ -54,27 +57,102 @@ namespace PetFelizApi.Controllers
         {
             //Posteriormente, modificar as buscas de acordo com o o tipo de usuário que está solicitando  
 
-            List<Servico> servicosGerais = await _context.Servico.Where(estado => estado.Estado != EstadoSolicitacao.Finalizado)
+            Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(u => u.Id == PegarIdUsuarioToken());
+            
+            if(usuario.TipoConta == TipoConta.Proprietario)
+            {
+                // List<Servico> servicosGerais = await _context.Servico.Where(estado => estado.Estado != EstadoSolicitacao.Finalizado)
+                // .Include(usu => usu.Usuarios).ThenInclude(usua => usua.Usuario)
+                // .Include(cao => cao.Caes)
+                // .OrderByDescending(dt => dt.Id)
+                // .ToListAsync();
+
+                List<UsuariosServico> servicosGerais = await _context.UsuariosServico
+                .Where(usu => usu.Usuario == usuario && usu.Servico.Estado != EstadoSolicitacao.Finalizado)
+                .Include(s => s.Servico)
+                .ThenInclude(usu => usu.Usuarios)
+                .ThenInclude(u => u.Usuario)
+                .ToListAsync();
+
+                return Ok(servicosGerais);
+            }
+            else
+            {
+                List<UsuariosServico> servicosGerais = await _context.UsuariosServico
+                .Where(usu => usu.Usuario == usuario 
+                    && (usu.Servico.Estado == EstadoSolicitacao.Aceito || usu.Servico.Estado == EstadoSolicitacao.EmAndamento))
+                .Include("Servico.Caes.Cao")
+                .Include(s => s.Servico)
+                .ThenInclude(usu => usu.Usuarios)
+                .ThenInclude(u => u.Usuario)
+                .ToListAsync();
+
+                return Ok(servicosGerais);
+            }
+
+
+            /*
+            if(usuario.TipoConta == TipoConta.Proprietario)
+            {
+                List<Servico> servicosGerais = await _context.Servico.Where(estado => estado.Estado != EstadoSolicitacao.Finalizado)
                 .Include(usu => usu.Usuarios).ThenInclude(usua => usua.Usuario)
                 .Include(cao => cao.Caes)
                 .OrderByDescending(dt => dt.Id)
                 .ToListAsync();
 
             return Ok(servicosGerais);
+            }
+            */
         }
 
-         // Nome : Listar serviços finalizados
+        // Nome : Listar serviços finalizados
         // Atores : Proprietário e Dog Walker
         // OBS : nenhuma
         [HttpGet("ListarServicosFinalizados")]
         public async Task<IActionResult> listarServicosFinalizados()
         {
-            List<Servico> servicosFinalizados = await _context.Servico.Where(estado => estado.Estado == EstadoSolicitacao.Finalizado)
-                .Include(usu => usu.Usuarios).ThenInclude(usua => usua.Usuario)
-                .OrderByDescending(dt => dt.Id)
-                .ToListAsync();
+            Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(u => u.Id == PegarIdUsuarioToken());
+
+
+            List<UsuariosServico> servicosFinalizados = await _context.UsuariosServico
+            .Where(usu => usu.Usuario == usuario && usu.Servico.Estado == EstadoSolicitacao.Finalizado)
+            .Include(s => s.Servico)
+            .ThenInclude(usu => usu.Usuarios)
+            .ThenInclude(u => u.Usuario)
+            .ToListAsync();
+            
+
+            // List<Servico> servicosFinalizados = await _context.Servico.Where(estado => estado.Estado == EstadoSolicitacao.Finalizado)
+            //     .Include(usu => usu.Usuarios).ThenInclude(usua => usua.Usuario)
+            //     .OrderByDescending(dt => dt.Id)
+            //     .ToListAsync();
 
             return Ok(servicosFinalizados);
+        }
+
+        // Nome : Listar serviços Solicitados
+        // Atores : Dog Walker
+        // OBS : nenhuma
+        [HttpGet("ListarServicosSolicitados")]
+        public async Task<IActionResult> listarServicosSolicitados()
+        {
+            Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(u => u.Id == PegarIdUsuarioToken());
+
+            if(usuario.TipoConta == TipoConta.DogWalker)
+            {
+                List<UsuariosServico> servicosSolicitados = await _context.UsuariosServico
+                .Where(usu => usu.Usuario == usuario && usu.Servico.Estado == EstadoSolicitacao.Solicitado)
+                .Include("Servico.Caes.Cao")
+                .Include(s => s.Servico)
+                .ThenInclude(usu => usu.Usuarios)
+                .ThenInclude(u => u.Usuario)
+                .ToListAsync();
+
+                return Ok(servicosSolicitados);
+            }
+            else 
+                return BadRequest("Esta ação é somente permitida para um Dog Walker.");
+
         }
 
         
@@ -84,29 +162,32 @@ namespace PetFelizApi.Controllers
         [HttpPut("Cancelar/{id}")]
         public async Task<IActionResult> cancelarServico(int id)
         {
-            //Pegar pelo token
-            //Depois verificar o tipo de usuário pelo token
+            Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(u => u.Id == PegarIdUsuarioToken());
 
+            //Buscar serviço pelo id do path
             int idServico = id;
             Servico servico = await _context.Servico.FirstOrDefaultAsync(id => id.Id == idServico);
 
-            //Verificar se, o serviço que está a ser cencelado, está em estado de aceito ou solicitado
-            if(servico.Estado == EstadoSolicitacao.Aceito || servico.Estado == EstadoSolicitacao.Solicitado)
+            //Verifica se o usuário é do tipo proprietário, pois somente os proprietários podem
+            //cancelar um serviço.
+            if(usuario.TipoConta == TipoConta.Proprietario)
             {
-                 servico.Estado = EstadoSolicitacao.Cancelado;
+                //Verificar se, o serviço que está a ser cencelado, está em estado de aceito ou solicitado
+                if(servico.Estado == EstadoSolicitacao.Aceito || servico.Estado == EstadoSolicitacao.Solicitado)
+                {
+                     servico.Estado = EstadoSolicitacao.Cancelado;
+
+                    _context.Servico.Update(servico);
+                    await _context.SaveChangesAsync();
+
+                    return Ok(servico);
+                }
+                else
+                    return BadRequest("O serviço não pode ser cancelado");
             }
             else
-            {
-                return BadRequest("O serviço já foi cancelado.");
-            }
-
-            //Define o estado do servico para cancelado
-            servico.Estado = EstadoSolicitacao.Cancelado;
-
-            _context.Servico.Update(servico);
-            await _context.SaveChangesAsync();
-
-            return Ok(servico);
+                return BadRequest("Este usuário não tem permissão para cancelar este serviço");
+            
         }
         
         
@@ -117,107 +198,148 @@ namespace PetFelizApi.Controllers
         [HttpPut("Iniciar/{id}")]
         public async Task<IActionResult> iniciarServico(int id)
         {
-            //Pegar pelo token
-            //Depois verificar o tipo de usuário pelo token
+            Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(u => u.Id == PegarIdUsuarioToken());
 
             int idServico = id;
             Servico servico = await _context.Servico.FirstOrDefaultAsync(id => id.Id == idServico);
 
-            //Verifica se o estado do serviço não está como aceito
-            if(servico.Estado != EstadoSolicitacao.Aceito)
+            if(usuario.TipoConta == TipoConta.Proprietario)
             {
-                 return BadRequest("Impossível iniciar o serviço. O serviço deve estar em estado de Aceito.");
+                //Verifica se o estado do serviço não está como aceito
+                if(servico.Estado != EstadoSolicitacao.Aceito)
+                {
+                     return BadRequest("Impossível iniciar o serviço. O serviço deve estar em estado de Aceito.");
+                }
+                else
+                {
+                    //Atribuir hora do inicio do servico
+                    DateTime horaAtual = DateTime.Now;
+                    servico.HoraInicio = horaAtual.ToString("HH:mm");
+
+                    servico.Estado = EstadoSolicitacao.EmAndamento;
+
+                    _context.Servico.Update(servico);
+                    await _context.SaveChangesAsync();
+
+                    return Ok(servico);
+                }
             }
-
-            //Atribuir hora do inicio do servico
-            DateTime horaAtual = DateTime.Now;
-            servico.HoraInicio = horaAtual.ToString("HH:mm");
-
-            servico.Estado = EstadoSolicitacao.EmAndamento;
-
-            _context.Servico.Update(servico);
-            await _context.SaveChangesAsync();
-
-            return Ok(servico);
+            else
+                return BadRequest("Este usuário não tem permissão para iniciar este serviço");
+            
         }
 
 
         // Nome : Finalizar Servico
         // Atore : Proprietário
         // OBS : O id DEVE vir pela url
-        [HttpPut("FinalizarServico/{id}")]
+        [HttpPut("Finalizar/{id}")]
         public async Task<IActionResult> finalizarServico(int id)
         {
+            Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(u => u.Id == PegarIdUsuarioToken());
+
             int idServico = id;
             Servico servico = await _context.Servico.FirstOrDefaultAsync(id => id.Id == idServico);
 
-            if(servico.Estado != EstadoSolicitacao.EmAndamento)
+            if(usuario.TipoConta == TipoConta.Proprietario)
             {
-                return BadRequest("Não é possível finalizar o serviço, ele deve ter sido iniciado, antes");
+                if(servico.Estado != EstadoSolicitacao.EmAndamento)
+                {
+                    return BadRequest("Não é possível finalizar o serviço, ele deve ter sido iniciado, antes");
+                }
+                else
+                {
+                    //Atribuir hora do fim do servico
+                    DateTime horaAtual = DateTime.Now;
+                    servico.HoraTermino = horaAtual.ToString("HH:mm");
+
+                    servico.Estado = EstadoSolicitacao.Finalizado;
+
+                    _context.Servico.Update(servico);
+                    await _context.SaveChangesAsync();
+
+                    return Ok(servico);
+                }
             }
-
-            //Atribuir hora do inicio do servico
-            DateTime horaAtual = DateTime.Now;
-            servico.HoraTermino = horaAtual.ToString("HH:mm");
-
-            servico.Estado = EstadoSolicitacao.Finalizado;
-
-            _context.Servico.Update(servico);
-            await _context.SaveChangesAsync();
-
-            return Ok(servico);
+            else
+                return BadRequest("Este usuário não tem permissão para finalizar este serviço.");
         }
 
         // Nome : Aceitar Servico
         // Atore : Dog Walker
         // OBS : O id DEVE vir pela url
-        [HttpPut("AceitarServico/{id}")]
+        [HttpPut("Aceitar/{id}")]
         public async Task<IActionResult> aceitarServico(int id)
         {
-            //Posteriormente, verificar o usuario pelo token
+            Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(u => u.Id == PegarIdUsuarioToken());
 
             int idServico = id;
             Servico servico = await _context.Servico.FirstOrDefaultAsync(id => id.Id == idServico);
             
-            if(servico.Estado != EstadoSolicitacao.Solicitado)
-                return BadRequest("Não foi possível iniciar o serviço.");
+            if(usuario.TipoConta == TipoConta.DogWalker)
+            {
+                if(servico.Estado != EstadoSolicitacao.Solicitado)
+                    return BadRequest("Não foi possível iniciar o serviço.");
+                else
+                {
+                    servico.Estado = EstadoSolicitacao.Aceito;
 
-            servico.Estado = EstadoSolicitacao.Aceito;
+                    _context.Servico.Update(servico);
+                    await _context.SaveChangesAsync();
 
-            _context.Servico.Update(servico);
-            await _context.SaveChangesAsync();
+                    return Ok(servico);
+                }
+            }
+            else
+                return BadRequest("Este usuário não tem permissão para aceitar este serviço.");
 
-            return Ok(servico);
         }
 
         // Nome : Recusar Servico
         // Atore : Dog Walker
         // OBS : O id DEVE vir pela url
-        [HttpPut("RecusarServico/{id}")]
+        [HttpPut("Recusar/{id}")]
         public async Task<IActionResult> recusarServico(int id)
         {
-            //Posteriormente, verificar o usuario pelo token
+            Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(u => u.Id == PegarIdUsuarioToken());
 
             int idServico = id;
             Servico servico = await _context.Servico.FirstOrDefaultAsync(id => id.Id == idServico);
             
-            if(servico.Estado != EstadoSolicitacao.Solicitado)
-                return BadRequest("Não foi possível recusar o serviço.");
+            if(usuario.TipoConta == TipoConta.DogWalker)
+            {
+                if(servico.Estado != EstadoSolicitacao.Solicitado)
+                    return BadRequest("Não foi possível recusar o serviço.");
+                else
+                {
+                    servico.Estado = EstadoSolicitacao.Recusado;
 
-            servico.Estado = EstadoSolicitacao.Recusado;
+                    _context.Servico.Update(servico);
+                    await _context.SaveChangesAsync();
 
-            _context.Servico.Update(servico);
-            await _context.SaveChangesAsync();
+                    return Ok(servico);
+                }
+            }
+            else
+                return BadRequest("Este usuário não tem permissão para recusar o serviço.");
 
-            return Ok(servico);
+            
         }
         
 
+        //Retornará o Id do usuário logado
+        private int PegarIdUsuarioToken()
+        {
+            return int.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+        }
+
 
         private readonly DataContext _context;
-        public ServicoController(DataContext context)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public ServicoController(DataContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
 
     }

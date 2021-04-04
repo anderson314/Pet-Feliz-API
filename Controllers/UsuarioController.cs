@@ -7,13 +7,21 @@ using Microsoft.EntityFrameworkCore;
 using PetFelizApi.Data;
 using PetFelizApi.Models;
 using PetFelizApi.Models.Enuns;
+using Microsoft.Extensions.Configuration;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PetFelizApi.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class UsuarioController : ControllerBase
     {
+        [AllowAnonymous]
         [HttpPost("Cadastrar")]
         public async Task<IActionResult> cadastrarUsuarioAsync(Usuario novoUsuario)
         {
@@ -43,6 +51,7 @@ namespace PetFelizApi.Controllers
             return Ok(usuarios);
         }
 
+        [AllowAnonymous]
         [HttpPost("Autenticar")]
         public async Task<IActionResult> AutenticarUsuario(Usuario credenciaisUsuario)
         {
@@ -61,11 +70,10 @@ namespace PetFelizApi.Controllers
             }
             else
             {
-                return Ok(usuario.Id);
+                return Ok(CriarToken(usuario));
             }
 
         }
-
 
 
         //Método para listar proprietários
@@ -87,6 +95,16 @@ namespace PetFelizApi.Controllers
             //Aplicar um where para buscar o dog walker mais proximo, através da latitude e longitude
             //Busca será feita pelo token
 
+            //Pega o id do usuário logado -- token
+            int id = PegarIdUsuarioToken();
+
+            Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(u => u.Id == id);
+
+            if(usuario.TipoConta == TipoConta.DogWalker)
+            {
+                return BadRequest("O Dog Walker não pode ver outros Dog Walkers.");
+            }
+            
             List<Usuario> dogWalkers = await _context.Usuario
                 .Include(valor => valor.ServicoDogWalker)
                 .Where(tipoConta => tipoConta.TipoConta == TipoConta.DogWalker)
@@ -96,13 +114,14 @@ namespace PetFelizApi.Controllers
         }
 
 
+        [AllowAnonymous]
         //Deletar
         [HttpDelete]
         public async Task<IActionResult> deletarUsuario()
         {
             //Posteriormente, pegar usuario pelo token kk
 
-            Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(user => user.Id == 1);
+            Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(user => user.Id == 7);
 
             _context.Remove(usuario);
             await _context.SaveChangesAsync();
@@ -122,6 +141,12 @@ namespace PetFelizApi.Controllers
                 passwordSalt = hmac.Key;
                 passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
             }
+        }
+
+        //Retorna o Id do usuário logado
+        private int PegarIdUsuarioToken()
+        {
+            return int.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
         }
 
         //Método que verificará se usuário já existe
@@ -151,11 +176,38 @@ namespace PetFelizApi.Controllers
             }
         }
     
+        //Função que criará o token
+        private string CriarToken(Usuario usuario)
+        {
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
+                new Claim(ClaimTypes.Name, usuario.Nome)
+            };
+            SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8
+            .GetBytes(_configuration.GetSection("AppSettings:Token").Value));
 
+            SigningCredentials creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.Now.AddDays(5),
+                SigningCredentials = creds
+            };
+
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
+
+            return tokenHandler.WriteToken(token);
+        }
+
+        
         private readonly DataContext _context;
-        public UsuarioController(DataContext context)
+        private readonly IConfiguration _configuration;
+        public UsuarioController(DataContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
     }
 }

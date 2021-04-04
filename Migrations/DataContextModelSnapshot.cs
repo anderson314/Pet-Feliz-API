@@ -78,7 +78,7 @@ namespace PetFelizApi.Migrations
                     b.Property<string>("AnoConclusao")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("DogWalkerId")
+                    b.Property<int?>("InfoServDogWId")
                         .HasColumnType("int");
 
                     b.Property<string>("Nome")
@@ -86,7 +86,7 @@ namespace PetFelizApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DogWalkerId");
+                    b.HasIndex("InfoServDogWId");
 
                     b.ToTable("Curso");
                 });
@@ -279,11 +279,11 @@ namespace PetFelizApi.Migrations
 
             modelBuilder.Entity("PetFelizApi.Models.Curso", b =>
                 {
-                    b.HasOne("PetFelizApi.Models.Usuario", "DogWalker")
-                        .WithMany("Cursos")
-                        .HasForeignKey("DogWalkerId");
+                    b.HasOne("PetFelizApi.Models.InformacoesServicoDogWalker", "InfoServDogW")
+                        .WithMany()
+                        .HasForeignKey("InfoServDogWId");
 
-                    b.Navigation("DogWalker");
+                    b.Navigation("InfoServDogW");
                 });
 
             modelBuilder.Entity("PetFelizApi.Models.InformacoesServicoDogWalker", b =>
@@ -331,8 +331,6 @@ namespace PetFelizApi.Migrations
             modelBuilder.Entity("PetFelizApi.Models.Usuario", b =>
                 {
                     b.Navigation("Caes");
-
-                    b.Navigation("Cursos");
 
                     b.Navigation("ServicoDogWalker");
 

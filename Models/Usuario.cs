@@ -25,7 +25,5 @@ namespace PetFelizApi.Models
        public byte[] PasswordSalt { get; set; }
        [NotMapped]
        public string PasswordString { get; set; }
-       public List<Curso> Cursos { get; set; }
-
     }
 }
