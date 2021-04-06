@@ -37,7 +37,7 @@ namespace PetFelizApi
         {
             services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
             {
-                builder.WithOrigins("http://pet-feliz.somee.com/PetFeliz")
+                builder.WithOrigins("http://localhost:8100")
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials();
