@@ -35,13 +35,15 @@ namespace PetFelizApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
+            services.AddCors(options =>
             {
-                builder.WithOrigins("http://localhost:8100")
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins("http://localhost:8100")
                     .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials();
-            }));
+                    .AllowAnyHeader();
+                });
+        });
             
             services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("ConexaoSomee")));
             services.AddControllers();
@@ -87,7 +89,8 @@ namespace PetFelizApi
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCors("CorsPolicy");
+            app.UseCors();
+
 
             app.UseEndpoints(endpoints =>
             {

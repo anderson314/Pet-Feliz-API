@@ -63,3 +63,8 @@ C:\Users\ander\Desktop\Curso Des. Sis\Pet-Feliz\PetFelizApi\obj\Debug\net5.0\Pet
 C:\Users\ander\Desktop\Curso Des. Sis\Pet-Feliz\PetFelizApi\obj\Debug\net5.0\ref\PetFelizApi.dll
 C:\Users\ander\Desktop\Curso Des. Sis\Pet-Feliz\PetFelizApi\obj\Debug\net5.0\PetFelizApi.pdb
 C:\Users\ander\Desktop\Curso Des. Sis\Pet-Feliz\PetFelizApi\obj\Debug\net5.0\PetFelizApi.genruntimeconfig.cache
+C:\Users\ander\Desktop\Curso Des. Sis\Pet-Feliz\PetFelizApi\bin\Debug\net5.0\publish\web.config
+C:\Users\ander\Desktop\Curso Des. Sis\Pet-Feliz\PetFelizApi\bin\Debug\net5.0\publish\appsettings.Development.json
+C:\Users\ander\Desktop\Curso Des. Sis\Pet-Feliz\PetFelizApi\bin\Debug\net5.0\publish\appsettings.json
+C:\Users\ander\Desktop\Curso Des. Sis\Pet-Feliz\PetFelizApi\bin\Debug\net5.0\publish\PetFelizApi.deps.json
+C:\Users\ander\Desktop\Curso Des. Sis\Pet-Feliz\PetFelizApi\bin\Debug\net5.0\publish\PetFelizApi.runtimeconfig.json
