@@ -35,10 +35,17 @@ namespace PetFelizApi.Controllers
                 return BadRequest("O cão não pertence a " + Proprietario.Nome);
             }
 
-            //Buscar o último servico do proprietario
-            Servico servico = await _context.Servico.OrderBy(prop => prop.ProprietarioId == idProprietario)
-                //.Include(usua => usua.Usuarios).ThenInclude(details => details.Usuario)
-                //.Include(caes => caes.Caes).ThenInclude(details => details.Cao)
+            // //Buscar o último servico do proprietario
+            // Servico servico = await _context.Servico.OrderBy(prop => prop.ProprietarioId == idProprietario)
+            //     //.Include(usua => usua.Usuarios).ThenInclude(details => details.Usuario)
+            //     //.Include(caes => caes.Caes).ThenInclude(details => details.Cao)
+            //     .LastAsync();
+
+            //Pegar o último serviço solicitado pelo Proprietário, para associar o cão a este serviço
+            Servico servico = await _context.Servico
+                .Include(usua => usua.Usuarios)
+                .Where(id => id.ProprietarioId == PegarIdUsuarioToken())
+                .OrderBy(it => it.Id)
                 .LastAsync();
 
             //O servico a qual o cão está sendo associado será o serviço buscado acima

@@ -67,8 +67,16 @@ namespace PetFelizApi.Controllers
                 // .OrderByDescending(dt => dt.Id)
                 // .ToListAsync();
 
+                // List<UsuariosServico> servicosGerais = await _context.UsuariosServico
+                // .Where(usu => usu.Usuario == usuario && usu.Servico.Estado != EstadoSolicitacao.Finalizado)
+                // .Include(s => s.Servico)
+                // .ThenInclude(usu => usu.Usuarios)
+                // .ThenInclude(u => u.Usuario)
+                // .ToListAsync();
+
                 List<UsuariosServico> servicosGerais = await _context.UsuariosServico
                 .Where(usu => usu.Usuario == usuario && usu.Servico.Estado != EstadoSolicitacao.Finalizado)
+                .OrderByDescending(dt => dt.Servico.Id)
                 .Include(s => s.Servico)
                 .ThenInclude(usu => usu.Usuarios)
                 .ThenInclude(u => u.Usuario)

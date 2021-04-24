@@ -41,6 +41,7 @@ namespace PetFelizApi.Controllers
                 //Se não achar nada, vai associar o proprietário ao serviço
                 if(usuSer == null)
                 {
+                    novoUsuariosServico.UsuarioId = usuario.Id;
                     novoUsuariosServico.Servico = servico;
                     novoUsuariosServico.Usuario = usuario;
 
@@ -71,6 +72,82 @@ namespace PetFelizApi.Controllers
             else
                 return BadRequest("Este usuário não tem permissão pra realizar esta ação.");
             
+        }
+
+        [HttpGet("Teste")]
+        public async Task<IActionResult> teste()
+        {
+            UsuariosServico proprietarioServico = new UsuariosServico();
+
+            //Busca o proprietário
+            Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(usu => usu.Id == PegarIdUsuarioToken());
+
+            //Pegar o último serviço solicitado pelo Proprietário, para associar o proprietário a este serviço
+            Servico servico = await _context.Servico
+                .Include(usua => usua.Usuarios)
+                .Where(id => id.ProprietarioId == PegarIdUsuarioToken())
+                .OrderBy(it => it.Id)
+                .LastAsync();
+
+            return Ok(servico);
+        }
+
+        [HttpPost("AssociarProprietario")]
+        public async Task<IActionResult> associarProprietario()
+        {
+            UsuariosServico proprietarioServico = new UsuariosServico();
+
+            //Busca o proprietário
+            Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(usu => usu.Id == PegarIdUsuarioToken());
+
+            //Pegar o último serviço solicitado pelo Proprietário, para associar o proprietário a este serviço
+            Servico servico = await _context.Servico
+                .Include(usua => usua.Usuarios)
+                .Where(id => id.ProprietarioId == PegarIdUsuarioToken())
+                .OrderBy(it => it.Id)
+                .LastAsync();
+
+            // Servico ultimoServico = await _context.Servico
+            //     .Where(u => u.ProprietarioId == PegarIdUsuarioToken())
+            //     .LastAsync();
+
+            proprietarioServico.Usuario = usuario;
+            proprietarioServico.Servico = servico;
+
+            await _context.UsuariosServico.AddAsync(proprietarioServico);
+            await _context.SaveChangesAsync();
+
+            return Ok(proprietarioServico);
+        }
+
+        [HttpPost("AssociarDogWalker")]
+        public async Task<IActionResult> associarDogWalker(UsuariosServico dogWalkerServico)
+        {   
+            //Busca o proprietário
+            Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(usu => usu.Id == PegarIdUsuarioToken());
+
+            // //Pegar o último serviço solicitado pelo Proprietário, para associar o proprietário a este serviço
+            // Servico servico = await _context.Servico.OrderBy(prop => prop.ProprietarioId == PegarIdUsuarioToken())
+            //     .Include(usua => usua.Usuarios)
+            //     .LastAsync();
+
+            //Pegar o último serviço solicitado pelo Proprietário, para associar o proprietário a este serviço
+            Servico servico = await _context.Servico
+                .Include(usua => usua.Usuarios)
+                .Where(id => id.ProprietarioId == PegarIdUsuarioToken())
+                .OrderBy(it => it.Id)
+                .LastAsync();
+
+            //Busca o Dog Walker
+            Usuario dogWalker = await _context.Usuario.FirstOrDefaultAsync(dogW => dogW.Id == dogWalkerServico.UsuarioId );
+
+            dogWalkerServico.Usuario = dogWalker;
+            dogWalkerServico.Servico = servico;
+
+            await _context.UsuariosServico.AddAsync(dogWalkerServico);
+            await _context.SaveChangesAsync();
+
+            return Ok(dogWalkerServico);
         }
         
         private int PegarIdUsuarioToken()

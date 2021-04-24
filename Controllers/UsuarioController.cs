@@ -109,8 +109,27 @@ namespace PetFelizApi.Controllers
                 .Include(valor => valor.ServicoDogWalker)
                 .Where(tipoConta => tipoConta.TipoConta == TipoConta.DogWalker)
                 .ToListAsync();
+            
+            
 
             return Ok(dogWalkers);
+        }
+
+        [HttpPut("InserirLocalizacao")]
+        public async Task<IActionResult> alterarLocalizacao(Usuario usuarioLocaliz)
+        {
+            //Pega o id do usuário logado -- token
+            int id = PegarIdUsuarioToken();
+
+            Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(u => u.Id == id);
+
+            usuario.Latitude = usuarioLocaliz.Latitude;
+            usuario.Longitude = usuarioLocaliz.Longitude;
+
+            _context.Usuario.Update(usuario);
+            await _context.SaveChangesAsync();
+
+            return Ok(usuario);
         }
 
 
@@ -191,7 +210,7 @@ namespace PetFelizApi.Controllers
             SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddDays(5),
+                Expires = DateTime.Now.AddDays(14),
                 SigningCredentials = creds
             };
 

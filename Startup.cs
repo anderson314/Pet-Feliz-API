@@ -40,8 +40,9 @@ namespace PetFelizApi
                 options.AddDefaultPolicy(builder =>
                 {
                     builder.WithOrigins("http://localhost:8100")
+                    .AllowAnyHeader()
                     .AllowAnyMethod()
-                    .AllowAnyHeader();
+                    .AllowCredentials();
                 });
         });
             
@@ -87,9 +88,9 @@ namespace PetFelizApi
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseCors();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCors();
 
 
             app.UseEndpoints(endpoints =>
