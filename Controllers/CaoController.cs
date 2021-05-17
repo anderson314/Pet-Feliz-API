@@ -42,12 +42,12 @@ namespace PetFelizApi.Controllers
             return Ok(caes);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> listarCaesProprietario()
+        [HttpGet("{idProp}")]
+        public async Task<IActionResult> listarCaesProprietario(int idProp)
         {
             Usuario Proprietario = await _context.Usuario.FirstOrDefaultAsync(prop => prop.Id == PegarIdUsuarioToken());
 
-            List<Cao> Caes = await _context.Cao.Where(propri => propri.Proprietario == Proprietario)
+            List<Cao> Caes = await _context.Cao.Where(propri => propri.Proprietario.Id == idProp)
                 .Include(peso => peso.Peso)
                 .ToListAsync();
 

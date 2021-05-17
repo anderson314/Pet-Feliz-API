@@ -80,6 +80,7 @@ namespace PetFelizApi.Controllers
                 .Include(s => s.Servico)
                 .ThenInclude(usu => usu.Usuarios)
                 .ThenInclude(u => u.Usuario)
+                .ThenInclude(sd => sd.ServicoDogWalker)
                 .ToListAsync();
 
                 return Ok(servicosGerais);
@@ -127,6 +128,7 @@ namespace PetFelizApi.Controllers
             .Include(s => s.Servico)
             .ThenInclude(usu => usu.Usuarios)
             .ThenInclude(u => u.Usuario)
+            .ThenInclude(sd => sd.ServicoDogWalker)
             .ToListAsync();
             
 
@@ -150,6 +152,7 @@ namespace PetFelizApi.Controllers
             {
                 List<UsuariosServico> servicosSolicitados = await _context.UsuariosServico
                 .Where(usu => usu.Usuario == usuario && usu.Servico.Estado == EstadoSolicitacao.Solicitado)
+                .OrderByDescending(dt => dt.Servico.Id)
                 .Include("Servico.Caes.Cao")
                 .Include(s => s.Servico)
                 .ThenInclude(usu => usu.Usuarios)
@@ -184,11 +187,20 @@ namespace PetFelizApi.Controllers
                 if(servico.Estado == EstadoSolicitacao.Aceito || servico.Estado == EstadoSolicitacao.Solicitado)
                 {
                      servico.Estado = EstadoSolicitacao.Cancelado;
-
+                    
                     _context.Servico.Update(servico);
                     await _context.SaveChangesAsync();
 
-                    return Ok(servico);
+                    List<UsuariosServico> servicosGerais = await _context.UsuariosServico
+                    .Where(usu => usu.Usuario == usuario && usu.Servico.Estado != EstadoSolicitacao.Finalizado)
+                    .OrderByDescending(dt => dt.Servico.Id)
+                    .Include(s => s.Servico)
+                    .ThenInclude(usu => usu.Usuarios)
+                    .ThenInclude(u => u.Usuario)
+                    .ThenInclude(sd => sd.ServicoDogWalker)
+                    .ToListAsync();
+
+                    return Ok(servicosGerais);
                 }
                 else
                     return BadRequest("O serviço não pode ser cancelado");

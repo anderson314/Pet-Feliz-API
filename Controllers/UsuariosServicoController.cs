@@ -120,16 +120,16 @@ namespace PetFelizApi.Controllers
             return Ok(proprietarioServico);
         }
 
-        [HttpPost("AssociarDogWalker")]
-        public async Task<IActionResult> associarDogWalker(UsuariosServico dogWalkerServico)
+        [HttpPost("AssociarDogWalker/{dogWalkerId}")]
+        public async Task<IActionResult> associarDogWalker(int dogWalkerId)
         {   
+            UsuariosServico dogWalkerServico = new UsuariosServico();
+
             //Busca o proprietário
             Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(usu => usu.Id == PegarIdUsuarioToken());
-
-            // //Pegar o último serviço solicitado pelo Proprietário, para associar o proprietário a este serviço
-            // Servico servico = await _context.Servico.OrderBy(prop => prop.ProprietarioId == PegarIdUsuarioToken())
-            //     .Include(usua => usua.Usuarios)
-            //     .LastAsync();
+            
+            //Busca o Dog Walker
+            Usuario dogWalker = await _context.Usuario.FirstOrDefaultAsync(dogW => dogW.Id == dogWalkerId );
 
             //Pegar o último serviço solicitado pelo Proprietário, para associar o proprietário a este serviço
             Servico servico = await _context.Servico
@@ -138,8 +138,7 @@ namespace PetFelizApi.Controllers
                 .OrderBy(it => it.Id)
                 .LastAsync();
 
-            //Busca o Dog Walker
-            Usuario dogWalker = await _context.Usuario.FirstOrDefaultAsync(dogW => dogW.Id == dogWalkerServico.UsuarioId );
+            
 
             dogWalkerServico.Usuario = dogWalker;
             dogWalkerServico.Servico = servico;

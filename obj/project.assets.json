@@ -5662,23 +5662,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\ander\\.nuget\\packages\\": {},
-    "C:\\Microsoft\\Xamarin\\NuGet\\": {}
+    "C:\\Users\\Anderson\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\ander\\Desktop\\Curso Des. Sis\\Pet-Feliz\\PetFelizApi\\PetFelizApi.csproj",
+      "projectUniqueName": "C:\\Users\\Anderson\\Desktop\\Curso-DS\\TCC-PetFeliz\\Pet-Feliz-API\\PetFelizApi.csproj",
       "projectName": "PetFelizApi",
-      "projectPath": "C:\\Users\\ander\\Desktop\\Curso Des. Sis\\Pet-Feliz\\PetFelizApi\\PetFelizApi.csproj",
-      "packagesPath": "C:\\Users\\ander\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\ander\\Desktop\\Curso Des. Sis\\Pet-Feliz\\PetFelizApi\\obj\\",
+      "projectPath": "C:\\Users\\Anderson\\Desktop\\Curso-DS\\TCC-PetFeliz\\Pet-Feliz-API\\PetFelizApi.csproj",
+      "packagesPath": "C:\\Users\\Anderson\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Anderson\\Desktop\\Curso-DS\\TCC-PetFeliz\\Pet-Feliz-API\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
-        "C:\\Microsoft\\Xamarin\\NuGet\\"
+        "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
       ],
       "configFilePaths": [
-        "C:\\Users\\ander\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Anderson\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
       ],
@@ -5754,7 +5754,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.103\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.202\\RuntimeIdentifierGraph.json"
       }
     }
   }

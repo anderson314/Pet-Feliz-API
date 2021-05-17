@@ -107,7 +107,7 @@ namespace PetFelizApi.Controllers
             
             List<Usuario> dogWalkers = await _context.Usuario
                 .Include(valor => valor.ServicoDogWalker)
-                .Where(tipoConta => tipoConta.TipoConta == TipoConta.DogWalker)
+                .Where(filtro => filtro.TipoConta == TipoConta.DogWalker && filtro.ServicoDogWalker != null)
                 .ToListAsync();
             
             
@@ -128,6 +128,16 @@ namespace PetFelizApi.Controllers
 
             _context.Usuario.Update(usuario);
             await _context.SaveChangesAsync();
+
+            return Ok(usuario);
+        }
+
+        //Deve ser passado o token no header
+        [HttpGet]
+        public async Task<IActionResult> informacoesUsuario()
+        {
+            Usuario usuario = await _context.Usuario
+            .FirstOrDefaultAsync(id => id.Id == PegarIdUsuarioToken());
 
             return Ok(usuario);
         }
