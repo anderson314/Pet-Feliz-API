@@ -87,10 +87,18 @@ namespace PetFelizApi.Controllers
             }
             else
             {
+                // List<UsuariosServico> servicosGerais = await _context.UsuariosServico
+                // .Where(usu => usu.Usuario == usuario 
+                //     && (usu.Servico.Estado == EstadoSolicitacao.Aceito || usu.Servico.Estado == EstadoSolicitacao.EmAndamento))
+                // .Include("Servico.Caes.Cao")
+                // .Include(s => s.Servico)
+                // .ThenInclude(usu => usu.Usuarios)
+                // .ThenInclude(u => u.Usuario)
+                // .ToListAsync();
+
                 List<UsuariosServico> servicosGerais = await _context.UsuariosServico
-                .Where(usu => usu.Usuario == usuario 
-                    && (usu.Servico.Estado == EstadoSolicitacao.Aceito || usu.Servico.Estado == EstadoSolicitacao.EmAndamento))
-                .Include("Servico.Caes.Cao")
+                .Where(usu => usu.Usuario == usuario && usu.Servico.Estado != EstadoSolicitacao.Finalizado)
+                .OrderByDescending(dt => dt.Servico.Id)
                 .Include(s => s.Servico)
                 .ThenInclude(usu => usu.Usuarios)
                 .ThenInclude(u => u.Usuario)
@@ -125,6 +133,7 @@ namespace PetFelizApi.Controllers
 
             List<UsuariosServico> servicosFinalizados = await _context.UsuariosServico
             .Where(usu => usu.Usuario == usuario && usu.Servico.Estado == EstadoSolicitacao.Finalizado)
+            .OrderByDescending(dt => dt.Servico.Id)
             .Include(s => s.Servico)
             .ThenInclude(usu => usu.Usuarios)
             .ThenInclude(u => u.Usuario)

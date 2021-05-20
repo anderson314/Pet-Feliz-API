@@ -23,11 +23,17 @@ namespace PetFelizApi.Data
 
             modelBuilder.Entity<CaoServico>()
                 .HasKey(cs => new { cs.CaoId, cs.ServicoId});
+
+            modelBuilder.Entity<UsuarioAvaliacao>()
+                .HasKey(ua => new { ua.AvaliacaoId, ua.UsuarioId});
         }
 
         public DbSet<CaoServico> CaesServico { get ;set; }
         public DbSet<PesoCao> PesoCao { get; set; }
         public DbSet<Curso> Curso { get; set; }
+
+        public DbSet<Avaliacao> Avaliacao { get; set; }
+        public DbSet<UsuarioAvaliacao> UsuarioAvaliacao { get; set; }
         
     }
 }

@@ -115,7 +115,7 @@ namespace PetFelizApi.Controllers
             return Ok(dogWalkers);
         }
 
-        [HttpPut("InserirLocalizacao")]
+        [HttpPut("AtualizarLocalizacao")]
         public async Task<IActionResult> alterarLocalizacao(Usuario usuarioLocaliz)
         {
             //Pega o id do usuário logado -- token
@@ -136,7 +136,7 @@ namespace PetFelizApi.Controllers
         [HttpGet]
         public async Task<IActionResult> informacoesUsuario()
         {
-            Usuario usuario = await _context.Usuario
+            Usuario usuario = await _context.Usuario.Include(sd => sd.ServicoDogWalker)
             .FirstOrDefaultAsync(id => id.Id == PegarIdUsuarioToken());
 
             return Ok(usuario);

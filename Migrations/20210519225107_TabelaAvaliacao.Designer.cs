@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PetFelizApi.Data;
 
 namespace PetFelizApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210519225107_TabelaAvaliacao")]
+    partial class TabelaAvaliacao
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,9 +35,6 @@ namespace PetFelizApi.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Nota")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProprietarioId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -250,21 +249,6 @@ namespace PetFelizApi.Migrations
                     b.ToTable("Usuario");
                 });
 
-            modelBuilder.Entity("PetFelizApi.Models.UsuarioAvaliacao", b =>
-                {
-                    b.Property<int>("AvaliacaoId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UsuarioId")
-                        .HasColumnType("int");
-
-                    b.HasKey("AvaliacaoId", "UsuarioId");
-
-                    b.HasIndex("UsuarioId");
-
-                    b.ToTable("UsuarioAvaliacao");
-                });
-
             modelBuilder.Entity("PetFelizApi.Models.UsuariosServico", b =>
                 {
                     b.Property<int>("UsuarioId")
@@ -336,25 +320,6 @@ namespace PetFelizApi.Migrations
                     b.Navigation("DogWalker");
                 });
 
-            modelBuilder.Entity("PetFelizApi.Models.UsuarioAvaliacao", b =>
-                {
-                    b.HasOne("PetFelizApi.Models.Avaliacao", "Avaliacao")
-                        .WithMany("UsuarioAvaliacao")
-                        .HasForeignKey("AvaliacaoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PetFelizApi.Models.Usuario", "Usuario")
-                        .WithMany("UsuarioAvaliacao")
-                        .HasForeignKey("UsuarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Avaliacao");
-
-                    b.Navigation("Usuario");
-                });
-
             modelBuilder.Entity("PetFelizApi.Models.UsuariosServico", b =>
                 {
                     b.HasOne("PetFelizApi.Models.Servico", "Servico")
@@ -372,11 +337,6 @@ namespace PetFelizApi.Migrations
                     b.Navigation("Servico");
 
                     b.Navigation("Usuario");
-                });
-
-            modelBuilder.Entity("PetFelizApi.Models.Avaliacao", b =>
-                {
-                    b.Navigation("UsuarioAvaliacao");
                 });
 
             modelBuilder.Entity("PetFelizApi.Models.InformacoesServicoDogWalker", b =>
@@ -403,8 +363,6 @@ namespace PetFelizApi.Migrations
                     b.Navigation("ServicoDogWalker");
 
                     b.Navigation("Servicos");
-
-                    b.Navigation("UsuarioAvaliacao");
                 });
 #pragma warning restore 612, 618
         }
