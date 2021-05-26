@@ -40,7 +40,8 @@ namespace PetFelizApi.Controllers
             novoUsuario.Disponivel = false;
 
             //Pegar data atual e colocá-la no JSON
-            DateTime data = DateTime.Today;
+            //Adiciona 2 horas, pois o servidor está 2 horas adiantadas
+            DateTime data = DateTime.Today.AddHours(2);
             novoUsuario.DataCadastro = data;
 
             await _context.Usuario.AddAsync(novoUsuario);

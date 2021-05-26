@@ -16,7 +16,7 @@ namespace PetFelizApi.Controllers
     [Route("[controller]")]
     public class ServicoController : ControllerBase
     {
-        
+
         //Nome : Solicitar servico
         //OBS: O Id do proprietário terá de ser mandado na requisição
         //O proprietário deverá ser adicionado primeiro
@@ -34,7 +34,8 @@ namespace PetFelizApi.Controllers
             novoServico.ProprietarioId = PegarIdUsuarioToken();
 
             DateTime dataAtual = DateTime.Today;
-            DateTime horaAtual = DateTime.Now;
+            //Adicionará duas horas pois o servidor está duas horas adiantadas
+            DateTime horaAtual = DateTime.Now.AddHours(2);
             
             //Atribuir a data e hora acima à requisição o JSON
             novoServico.DataSolicitacao = dataAtual.ToString("dd/MM/yyyy");
@@ -242,7 +243,8 @@ namespace PetFelizApi.Controllers
                 else
                 {
                     //Atribuir hora do inicio do servico
-                    DateTime horaAtual = DateTime.Now;
+                    //Adiciona 2 horas, pois o servidor está duas horas adiantadas
+                    DateTime horaAtual = DateTime.Now.AddHours(2);
                     servico.HoraInicio = horaAtual.ToString("HH:mm");
 
                     servico.Estado = EstadoSolicitacao.EmAndamento;
@@ -279,7 +281,8 @@ namespace PetFelizApi.Controllers
                 else
                 {
                     //Atribuir hora do fim do servico
-                    DateTime horaAtual = DateTime.Now;
+                    //Adiciona 2 horas, pois o servidor está duas horas adiantadas
+                    DateTime horaAtual = DateTime.Now.AddHours(2);
                     servico.HoraTermino = horaAtual.ToString("HH:mm");
 
                     servico.Estado = EstadoSolicitacao.Finalizado;

@@ -3,8 +3,10 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PetFelizApi.Data;
 using PetFelizApi.Models;
+using PetFelizApi.Models.Enuns;
 
 namespace Pet_Feliz_API.Controllers
 {
@@ -12,10 +14,77 @@ namespace Pet_Feliz_API.Controllers
     [Route("[controller]")]
     public class UsuarioAvaliacaoController : ControllerBase
     {
-        public async Task<ActionResult> cadastrarAvaliacao(Avaliacao avaliacao)
+        [HttpPost("AssociarProprietario")]
+        public async Task<ActionResult> associarProprietarioAvaliacao()
         {
+            UsuarioAvaliacao usuarioAvaliacao = new UsuarioAvaliacao();
 
-            return null;
+            //Busca o usuário que está fazendo a requisição
+            Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(usu => usu.Id == PegarIdUsuarioToken());
+
+            //Se o usuário que estives fazendo a requisição for um dog walker
+            if (usuario.TipoConta == TipoConta.DogWalker)
+            {
+                return BadRequest("Esta requisição serve para o proprietário. Tente novamente, tendo um.");
+            }
+
+            //Busca a última avaliação feita
+            Avaliacao avaliacao = await _context.Avaliacao
+                .Where(prop => prop.ProprietarioId == usuario.Id)
+                .OrderBy(order => order.Id)
+                .LastAsync();
+
+            //Se não houver avaliação alguma
+            if (avaliacao == null)
+            {
+                return BadRequest("Nenhuma avaliação encontrada.");
+            }
+
+            usuarioAvaliacao.Usuario = usuario;
+            usuarioAvaliacao.Avaliacao = avaliacao;
+
+            await _context.UsuarioAvaliacao.AddAsync(usuarioAvaliacao);
+            await _context.SaveChangesAsync();
+
+            return Ok(usuarioAvaliacao);
+        }
+
+        [HttpPost("AssociarDogWalker/{idDogW}")]
+        public async Task<ActionResult> associarDogWalkerAvaliacao(int idDogW)
+        {
+            UsuarioAvaliacao usuarioAvaliacao = new UsuarioAvaliacao();
+
+            //Busca o usuário que está fazendo a requisição
+            Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(usu => usu.Id == PegarIdUsuarioToken());
+
+            //Se o usuário que estives fazendo a requisição for um dog walker
+            if (usuario.TipoConta == TipoConta.DogWalker)
+            {
+                return BadRequest("Esta requisição serve para o proprietário. Tente novamente, tendo um.");
+            }
+
+            //Busca o dog walker que receberá a avaliação
+            Usuario dogWalker = await _context.Usuario.FirstOrDefaultAsync(dogw => dogw.Id == idDogW);
+
+            //Busca a última avaliação feita
+            Avaliacao avaliacao = await _context.Avaliacao
+                .Where(prop => prop.ProprietarioId == usuario.Id)
+                .OrderBy(order => order.Id)
+                .LastAsync();
+
+            //Se não houver avaliação alguma
+            if (avaliacao == null)
+            {
+                return BadRequest("Nenhuma avaliação encontrada.");
+            }
+
+            usuarioAvaliacao.Usuario = dogWalker;
+            usuarioAvaliacao.Avaliacao = avaliacao;
+
+            await _context.UsuarioAvaliacao.AddAsync(usuarioAvaliacao);
+            await _context.SaveChangesAsync();
+
+            return Ok(usuarioAvaliacao);
         }
 
         //Retorna o Id do usuário logado
