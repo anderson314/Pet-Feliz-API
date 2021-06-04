@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PetFelizApi.Data;
 
 namespace PetFelizApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210528213331_2ValorDecimalAvaliacaoMedia")]
+    partial class _2ValorDecimalAvaliacaoMedia
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -125,8 +127,8 @@ namespace PetFelizApi.Migrations
                     b.Property<bool>("AceitaCartao")
                         .HasColumnType("bit");
 
-                    b.Property<decimal>("AvaliacaoMedia")
-                        .HasColumnType("decimal(5,2)");
+                    b.Property<double>("AvaliacaoMedia")
+                        .HasColumnType("float");
 
                     b.Property<int>("DogWalkerId")
                         .HasColumnType("int");

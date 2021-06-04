@@ -87,6 +87,52 @@ namespace Pet_Feliz_API.Controllers
             return Ok(usuarioAvaliacao);
         }
 
+        [HttpGet("VerificarAvaliacao/{idDogW}")]
+        public async Task<IActionResult> verificarAvaliacoes(int idDogW)
+        {
+            Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(usu => usu.Id == PegarIdUsuarioToken());
+
+            Usuario dogWalker = await _context.Usuario.FirstOrDefaultAsync(dogW => dogW.Id == idDogW);
+
+
+            //Se caso for um proprietário solicitando
+            if (usuario.TipoConta == TipoConta.Proprietario)
+            {
+                //Busca a avaliação de um proprietário para um dog walker em especifico
+                UsuarioAvaliacao avaliacao = await _context.UsuarioAvaliacao
+                .Where(prop => prop.Avaliacao.ProprietarioId == usuario.Id && prop.Usuario.Id == idDogW)
+                .FirstOrDefaultAsync();
+
+                //Se não há avaliação alguma, então o dog walker pode ser avaliado
+                if (avaliacao == null)
+                {
+                    return Ok(true);
+                }
+                //caso contrário, ele não pode
+                else
+                {
+                    return Ok(false);
+                }
+            }
+            //Se caso for um dog walker solicitando
+            else
+            {
+                //Busca a avaliação do dog walker logado
+                UsuarioAvaliacao avaliacao = await _context.UsuarioAvaliacao
+                .Where(dogW => dogW.Usuario.Id == idDogW)
+                .FirstOrDefaultAsync();
+
+                if (avaliacao == null)
+                {  
+                    return Ok(true);
+                }
+                else
+                {
+                    return Ok(false);
+                }
+            }
+        }
+
         //Retorna o Id do usuário logado
         private int PegarIdUsuarioToken()
         {

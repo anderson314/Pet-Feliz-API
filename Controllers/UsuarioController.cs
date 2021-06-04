@@ -39,17 +39,12 @@ namespace PetFelizApi.Controllers
             //Todo usuário cadastrado receberá valor não disponível
             novoUsuario.Disponivel = false;
 
-            //Pegar data atual e colocá-la no JSON
-            //Adiciona 2 horas, pois o servidor está 2 horas adiantadas
-            DateTime data = DateTime.Today.AddHours(2);
-            novoUsuario.DataCadastro = data;
-
             await _context.Usuario.AddAsync(novoUsuario);
             await _context.SaveChangesAsync();
 
-            List<Usuario> usuarios = await _context.Usuario.ToListAsync();
+            Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(em => em.Email == novoUsuario.Email);
 
-            return Ok(usuarios);
+            return Ok(CriarToken(usuario));
         }
 
         [AllowAnonymous]
@@ -138,9 +133,76 @@ namespace PetFelizApi.Controllers
         public async Task<IActionResult> informacoesUsuario()
         {
             Usuario usuario = await _context.Usuario.Include(sd => sd.ServicoDogWalker)
+            .Include(infoDogwW => infoDogwW.ServicoDogWalker)
+            .ThenInclude(c => c.Cursos)
             .FirstOrDefaultAsync(id => id.Id == PegarIdUsuarioToken());
 
             return Ok(usuario);
+        }
+
+        [HttpPut("AtualizarAvaliacaoMedia/{idDogW}")]
+        public async Task<IActionResult> atualizarAvaliacaoMedia(int idDogW)
+        {
+            // Usuario usuario = await _context.Usuario.Include(sd => sd.ServicoDogWalker)
+            // .FirstOrDefaultAsync(id => id.Id == PegarIdUsuarioToken());
+
+            //Pega o número de avaliações
+            int avaliacoes = await _context.UsuarioAvaliacao
+            .Where(dog => dog.UsuarioId == idDogW)
+            .CountAsync();
+
+            //Soma todas as notas
+            Decimal somaAvaliacoes = await _context.UsuarioAvaliacao.Where(usu => usu.UsuarioId == 6)
+            .SumAsync(nota => nota.Avaliacao.Nota);
+
+            //Faz o cáluclo da média
+            Decimal media = somaAvaliacoes / avaliacoes;
+
+            //Busca as informações do serviço do dog walker
+            InformacoesServicoDogWalker infoServDogW = await _context.ServicoDogWalker
+                .FirstOrDefaultAsync(dogw => dogw.DogWalkerId == idDogW);
+
+            //atribuui a média ao dog walker
+            infoServDogW.AvaliacaoMedia = media;
+
+            //atualiza
+            _context.ServicoDogWalker.Update(infoServDogW);
+            await _context.SaveChangesAsync();
+
+            return Ok(infoServDogW);
+        }
+
+        [HttpPut("AlterarDisponibilidade/{idDisponibilidade}")]
+        public async Task<IActionResult> alterarDisponibilidade(int idDisponibilidade)
+        {
+            Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(i => i.Id == PegarIdUsuarioToken());
+
+            if (usuario.TipoConta == TipoConta.Proprietario)
+            {
+                return BadRequest("Este usuário não tem permissão para esta ação");
+            }
+
+            if (idDisponibilidade == 1)
+            {
+                usuario.Disponivel = true;
+            }
+            else
+            {
+                if (idDisponibilidade == 0)
+                {
+                    usuario.Disponivel = false;
+                }
+                else
+                {
+                    return BadRequest("Valor inválido.");
+                }
+            }
+
+            _context.Usuario.Update(usuario);
+            await _context.SaveChangesAsync();
+
+            return Ok("Disponibilidade atualizada");
+
         }
 
 

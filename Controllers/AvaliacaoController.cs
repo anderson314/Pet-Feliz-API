@@ -64,7 +64,9 @@ namespace Pet_Feliz_API.Controllers
             List<UsuarioAvaliacao> avaliacoes = await _context.UsuarioAvaliacao
                 .Where(avali => avali.Usuario.Id == idDogW)
                 .Include(dogw => dogw.Usuario)
-                .Include(usu => usu.Avaliacao.UsuarioAvaliacao)
+                .Include(usus => usus.Avaliacao.UsuarioAvaliacao)
+                .ThenInclude(usu => usu.Usuario)
+                .OrderBy(idAval => idAval.AvaliacaoId)
                 .ToListAsync();
 
             if (avaliacoes == null)

@@ -39,7 +39,31 @@ namespace PetFelizApi.Controllers
             await _context.SaveChangesAsync();
             
 
-            return Ok(dogW);
+            return Ok("Informações de serviço do Dog Walker inseridas!");
+        }
+
+        [HttpPut("AtualizarServicoDogWalker")]
+        public async Task<IActionResult> atualizarServicoDogWalker(InformacoesServicoDogWalker novoServDogW)
+        {
+            Usuario dogWalker = await _context.Usuario.FirstOrDefaultAsync(i => i.Id == PegarIdUsuarioToken());
+
+            if (dogWalker.TipoConta == TipoConta.Proprietario)
+            {  
+                return BadRequest("Um proprietário não tem permissão para realizar esta ação.");
+            }
+
+            InformacoesServicoDogWalker infoServDogW = await _context.ServicoDogWalker
+                .FirstOrDefaultAsync(dogW => dogW.DogWalkerId == dogWalker.Id);
+
+            infoServDogW.Sobre = novoServDogW.Sobre;
+            infoServDogW.ValorServico = novoServDogW.ValorServico;
+            infoServDogW.AceitaCartao = novoServDogW.AceitaCartao;
+            infoServDogW.Preferencias = novoServDogW.Preferencias;
+
+            _context.ServicoDogWalker.Update(infoServDogW);
+            await _context.SaveChangesAsync();
+
+            return Ok("Informações de Serviço do Dog Walker atualizadas.");
         }
 
         
