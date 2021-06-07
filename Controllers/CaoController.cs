@@ -16,7 +16,7 @@ namespace PetFelizApi.Controllers
     [Route("[controller]")]
     public class CaoController : ControllerBase
     {
-        [HttpPost]
+        [HttpPost("CadastrarCao")]
         public async Task<IActionResult> cadastrarCaoAsync(Cao novoCao)
         {
             //Busca o usuário de acordo com o token
@@ -37,18 +37,17 @@ namespace PetFelizApi.Controllers
             await _context.Cao.AddAsync(novoCao);
             await _context.SaveChangesAsync();
 
-            List<Cao> caes = await _context.Cao.Where(c => c.Proprietario == usuario).ToListAsync();
-
-            return Ok(caes);
+            return Ok("Cão cadastrado com sucesso!");
         }
 
-        [HttpGet("{idProp}")]
-        public async Task<IActionResult> listarCaesProprietario(int idProp)
+        [HttpGet("ListarCaesProprietario")]
+        public async Task<IActionResult> listarCaesProprietario()
         {
             Usuario Proprietario = await _context.Usuario.FirstOrDefaultAsync(prop => prop.Id == PegarIdUsuarioToken());
 
-            List<Cao> Caes = await _context.Cao.Where(propri => propri.Proprietario.Id == idProp)
+            List<Cao> Caes = await _context.Cao.Where(propri => propri.Proprietario.Id == Proprietario.Id)
                 .Include(peso => peso.Peso)
+                .OrderByDescending(c => c.Id)
                 .ToListAsync();
 
             return Ok(Caes);

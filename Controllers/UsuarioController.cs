@@ -84,12 +84,18 @@ namespace PetFelizApi.Controllers
         }
 
         //Listar Dog Walkers - Página de localizar Dog Walkers
-        [HttpGet("DogWalkers")]
-        public async Task<IActionResult> listarDogWalkers()
+        [HttpGet("DogWalkers/{latitude}/{longitude}")]
+        public async Task<IActionResult> listarDogWalkers(double latitude, double longitude)
         {
             //Ideias
             //Aplicar um where para buscar o dog walker mais proximo, através da latitude e longitude
             //Busca será feita pelo token
+
+            double latitudePositivo = latitude - (-0.02252);
+            double latitudeNegativo = latitude + (-0.02252);
+
+            double LongitudePositivo = longitude - (-0.02566);
+            double longitudeNegativo = longitude + (-0.02566);
 
             //Pega o id do usuário logado -- token
             int id = PegarIdUsuarioToken();
@@ -103,8 +109,13 @@ namespace PetFelizApi.Controllers
             
             List<Usuario> dogWalkers = await _context.Usuario
                 .Include(valor => valor.ServicoDogWalker)
-                .Where(filtro => filtro.TipoConta == TipoConta.DogWalker && filtro.ServicoDogWalker != null)
+                .Where(filtro => (filtro.TipoConta == TipoConta.DogWalker && filtro.ServicoDogWalker != null)
+                    && (latitudePositivo > filtro.Latitude && filtro.Latitude > latitudeNegativo) 
+                    && LongitudePositivo > filtro.Longitude && filtro.Longitude > longitudeNegativo)
+                .OrderBy(f => f.Latitude)
+                .OrderBy(f => f.Longitude) 
                 .ToListAsync();
+                        // && (filtro.Latitude <= latitudePositivo && filtro.Latitude >= latitudeNegativo) && (filtro.Longitude <= LongitudePositivo && filtro.Longitude >= latitudeNegativo))
             
             
 
