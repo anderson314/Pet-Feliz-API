@@ -12,7 +12,7 @@ namespace PetFelizApi.Models
        public string Nome           { get; set; }
        public DateTime DataNascimento { get; set; }
        public DateTime DataCadastro { get; set; }
-       public Byte[] FotoPerfil          { get; set; }
+       public string FotoPerfil          { get; set; }
        public string Email              { get; set; }
        public string WhatsApp   { get; set; }
        public List<Cao> Caes        { get; set; }

@@ -189,10 +189,6 @@ namespace PetFelizApi.Controllers
             int idServico = id;
             Servico servico = await _context.Servico.FirstOrDefaultAsync(id => id.Id == idServico);
 
-            //Verifica se o usuário é do tipo proprietário, pois somente os proprietários podem
-            //cancelar um serviço.
-            if(usuario.TipoConta == TipoConta.Proprietario)
-            {
                 //Verificar se, o serviço que está a ser cencelado, está em estado de aceito ou solicitado
                 if(servico.Estado == EstadoSolicitacao.Aceito || servico.Estado == EstadoSolicitacao.Solicitado)
                 {
@@ -214,9 +210,8 @@ namespace PetFelizApi.Controllers
                 }
                 else
                     return BadRequest("O serviço não pode ser cancelado");
-            }
-            else
-                return BadRequest("Este usuário não tem permissão para cancelar este serviço");
+            
+            
             
         }
         
