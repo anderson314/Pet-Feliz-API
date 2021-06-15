@@ -44,6 +44,32 @@ namespace PetFelizApi.Controllers
             
         }
 
+        [HttpPut("AlterarCurso/{cursoId}")]
+        public async Task<IActionResult> alterarCurso(int cursoId, Curso curso)
+        {
+
+            Curso _curso = await _context.Curso.FirstOrDefaultAsync(id => id.Id == cursoId);
+
+            _curso.AnoConclusao = curso.AnoConclusao;
+            _curso.Nome = curso.Nome;
+
+            _context.Update(_curso);
+            await _context.SaveChangesAsync();
+
+            return Ok(_curso);
+        }
+
+        [HttpDelete("RemoverCurso/{cursoId}")]
+        public async Task<IActionResult> removerCurso(int cursoId)
+        {
+            Curso curso = await _context.Curso.FirstOrDefaultAsync(id => id.Id == cursoId);
+
+            _context.Remove(curso);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
         //Retornará o Id do usuário logado
         private int PegarIdUsuarioToken()
         {
