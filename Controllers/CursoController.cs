@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PetFelizApi.Data;
 using PetFelizApi.Models;
+using PetFelizApi.Models.Enuns;
 
 namespace PetFelizApi.Controllers
 {
@@ -30,17 +31,33 @@ namespace PetFelizApi.Controllers
             return Ok();
         }
 
-        [HttpGet("ListarCursos")]
-        public async Task<IActionResult> listarCursos()
+        [HttpGet("ListarCursos/{idDogW}")]
+        public async Task<IActionResult> listarCursos(int idDogW)
         {
-            Usuario dogWalker = await _context.Usuario
+            Usuario usuario = await _context.Usuario
                 .FirstOrDefaultAsync(u => u.Id == PegarIdUsuarioToken());
 
-            List<Curso> cursos = await _context.Curso
-                .Where(f => f.InfoServDogW.DogWalkerId == dogWalker.Id)
+            if (usuario.TipoConta == TipoConta.DogWalker)
+            {
+                List<Curso> cursos = await _context.Curso
+                .Where(f => f.InfoServDogW.DogWalkerId == usuario.Id)
                 .ToListAsync();
 
-            return Ok(cursos);
+                return Ok(cursos);
+
+            }
+            else
+            {
+                List<Curso> cursos = await _context.Curso
+                .Where(f => f.InfoServDogW.DogWalkerId == idDogW)
+                .ToListAsync();
+
+                return Ok(cursos);
+
+            }
+
+            
+
             
         }
 
