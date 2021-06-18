@@ -41,6 +41,7 @@ namespace PetFelizApi.Controllers
             {
                 List<Curso> cursos = await _context.Curso
                 .Where(f => f.InfoServDogW.DogWalkerId == usuario.Id)
+                .OrderByDescending(f => f.Id)
                 .ToListAsync();
 
                 return Ok(cursos);
@@ -50,6 +51,7 @@ namespace PetFelizApi.Controllers
             {
                 List<Curso> cursos = await _context.Curso
                 .Where(f => f.InfoServDogW.DogWalkerId == idDogW)
+                .OrderByDescending(f => f.Id)
                 .ToListAsync();
 
                 return Ok(cursos);
