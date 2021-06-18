@@ -53,6 +53,27 @@ namespace PetFelizApi.Controllers
             return Ok(Caes);
         }  
 
+        [HttpPut("AlterarCao/{idCao}")]
+        public async Task<IActionResult> alterarCao(int idCao, Cao caoAtualiado)
+        {
+            Cao cao = await _context.Cao.FirstOrDefaultAsync(c => c.Id == idCao);
+
+            //busca o peso
+            PesoCao pesoCao = await _context.PesoCao.FirstOrDefaultAsync(pc => pc.Id == caoAtualiado.PesoId);
+
+            cao.Nome = caoAtualiado.Nome;
+            cao.Raca = caoAtualiado.Raca;
+            cao.Idade = caoAtualiado.Idade;
+            cao.Porte = caoAtualiado.Porte;
+            cao.PesoId = caoAtualiado.PesoId;
+            cao.Peso = pesoCao;
+
+            _context.Update(cao);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+
+        }
 
         [HttpDelete("DeletarCao/{idCao}")]
         public async Task<IActionResult> deletarCao(int idCao)
@@ -69,7 +90,7 @@ namespace PetFelizApi.Controllers
             _context.Remove(cao);
             await _context.SaveChangesAsync();
 
-            return Ok("Cão removido.");
+            return Ok();
         }
 
         //Retorna o Id do usuário logado

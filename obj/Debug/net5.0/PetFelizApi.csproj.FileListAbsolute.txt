@@ -138,13 +138,8 @@ C:\Users\Anderson\Desktop\TCC-PetFeliz\Pet-Feliz-API\obj\Debug\net5.0\PetFelizAp
 C:\Users\Anderson\Desktop\TCC-PetFeliz\Pet-Feliz-API\obj\Debug\net5.0\PetFelizApi.dll
 C:\Users\Anderson\Desktop\TCC-PetFeliz\Pet-Feliz-API\obj\Debug\net5.0\ref\PetFelizApi.dll
 C:\Users\Anderson\Desktop\TCC-PetFeliz\Pet-Feliz-API\obj\Debug\net5.0\PetFelizApi.genruntimeconfig.cache
-C:\Users\Anderson\Desktop\Curso-DS\TCC-PetFeliz\Pet-Feliz-API\bin\Debug\net5.0\publish\web.config
 C:\Users\Anderson\Desktop\Curso-DS\TCC-PetFeliz\Pet-Feliz-API\bin\Debug\net5.0\appsettings.Development.json
 C:\Users\Anderson\Desktop\Curso-DS\TCC-PetFeliz\Pet-Feliz-API\bin\Debug\net5.0\appsettings.json
-C:\Users\Anderson\Desktop\Curso-DS\TCC-PetFeliz\Pet-Feliz-API\bin\Debug\net5.0\publish\appsettings.Development.json
-C:\Users\Anderson\Desktop\Curso-DS\TCC-PetFeliz\Pet-Feliz-API\bin\Debug\net5.0\publish\appsettings.json
-C:\Users\Anderson\Desktop\Curso-DS\TCC-PetFeliz\Pet-Feliz-API\bin\Debug\net5.0\publish\PetFelizApi.deps.json
-C:\Users\Anderson\Desktop\Curso-DS\TCC-PetFeliz\Pet-Feliz-API\bin\Debug\net5.0\publish\PetFelizApi.runtimeconfig.json
 C:\Users\Anderson\Desktop\Curso-DS\TCC-PetFeliz\Pet-Feliz-API\bin\Debug\net5.0\PetFelizApi.exe
 C:\Users\Anderson\Desktop\Curso-DS\TCC-PetFeliz\Pet-Feliz-API\bin\Debug\net5.0\PetFelizApi.deps.json
 C:\Users\Anderson\Desktop\Curso-DS\TCC-PetFeliz\Pet-Feliz-API\bin\Debug\net5.0\PetFelizApi.runtimeconfig.json
