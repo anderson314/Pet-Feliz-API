@@ -112,8 +112,8 @@ namespace PetFelizApi.Controllers
                 .Where(filtro => (filtro.TipoConta == TipoConta.DogWalker && filtro.ServicoDogWalker != null)
                     && (latitudePositivo > filtro.Latitude && filtro.Latitude > latitudeNegativo) 
                     && LongitudePositivo > filtro.Longitude && filtro.Longitude > longitudeNegativo)
-                .OrderByDescending(f => f.Latitude)
-                .OrderByDescending(f => f.Longitude) 
+                .OrderBy(f => f.Latitude)
+                .OrderByDescending(f => f.Longitude)
                 .ToListAsync();
                         // && (filtro.Latitude <= latitudePositivo && filtro.Latitude >= latitudeNegativo) && (filtro.Longitude <= LongitudePositivo && filtro.Longitude >= latitudeNegativo))
             

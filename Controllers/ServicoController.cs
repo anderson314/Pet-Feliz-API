@@ -56,71 +56,41 @@ namespace PetFelizApi.Controllers
         [HttpGet("ListarServicosGerais")]
         public async Task<IActionResult> listarServicosGerais()
         {
-            //Posteriormente, modificar as buscas de acordo com o o tipo de usuário que está solicitando  
-
-            Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(u => u.Id == PegarIdUsuarioToken());
             
+            Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(u => u.Id == PegarIdUsuarioToken());
+
             if(usuario.TipoConta == TipoConta.Proprietario)
             {
-                // List<Servico> servicosGerais = await _context.Servico.Where(estado => estado.Estado != EstadoSolicitacao.Finalizado)
-                // .Include(usu => usu.Usuarios).ThenInclude(usua => usua.Usuario)
-                // .Include(cao => cao.Caes)
-                // .OrderByDescending(dt => dt.Id)
-                // .ToListAsync();
-
-                // List<UsuariosServico> servicosGerais = await _context.UsuariosServico
-                // .Where(usu => usu.Usuario == usuario && usu.Servico.Estado != EstadoSolicitacao.Finalizado)
-                // .Include(s => s.Servico)
-                // .ThenInclude(usu => usu.Usuarios)
-                // .ThenInclude(u => u.Usuario)
-                // .ToListAsync();
-
                 List<UsuariosServico> servicosGerais = await _context.UsuariosServico
                 .Where(usu => usu.Usuario == usuario && usu.Servico.Estado != EstadoSolicitacao.Finalizado)
-                .OrderByDescending(dt => dt.Servico.Id)
-                .Include(s => s.Servico)
-                .ThenInclude(usu => usu.Usuarios)
-                .ThenInclude(u => u.Usuario)
-                .ThenInclude(sd => sd.ServicoDogWalker)
+                //Ordem em que os serviços aparecerão
+                .OrderByDescending(e => e.Servico.Estado == EstadoSolicitacao.Solicitado)
+                    .ThenByDescending(e => e.Servico.Estado == EstadoSolicitacao.EmAndamento)
+                    .ThenByDescending(e => e.Servico.Estado == EstadoSolicitacao.Aceito)
+                    .ThenByDescending(e => e.Servico.Estado == EstadoSolicitacao.Recusado)
+                    .ThenByDescending(i => i.Servico.Id)
+                .Include("Servico.Usuarios.Usuario.ServicoDogWalker")
                 .ToListAsync();
+
 
                 return Ok(servicosGerais);
             }
             else
             {
-                // List<UsuariosServico> servicosGerais = await _context.UsuariosServico
-                // .Where(usu => usu.Usuario == usuario 
-                //     && (usu.Servico.Estado == EstadoSolicitacao.Aceito || usu.Servico.Estado == EstadoSolicitacao.EmAndamento))
-                // .Include("Servico.Caes.Cao")
-                // .Include(s => s.Servico)
-                // .ThenInclude(usu => usu.Usuarios)
-                // .ThenInclude(u => u.Usuario)
-                // .ToListAsync();
-
+               
                 List<UsuariosServico> servicosGerais = await _context.UsuariosServico
-                .Where(usu => usu.Usuario == usuario && usu.Servico.Estado != EstadoSolicitacao.Finalizado)
-                .OrderByDescending(dt => dt.Servico.Id)
-                .Include(s => s.Servico)
-                .ThenInclude(usu => usu.Usuarios)
-                .ThenInclude(u => u.Usuario)
+                .Where(usu => usu.Usuario == usuario && usu.Servico.Estado != EstadoSolicitacao.Finalizado && usu.Servico.Estado != EstadoSolicitacao.Solicitado)
+                //Ordem em que os serviços aparecerão
+                .OrderByDescending(e => e.Servico.Estado == EstadoSolicitacao.Aceito)
+                    .ThenByDescending(e => e.Servico.Estado == EstadoSolicitacao.EmAndamento)
+                    .ThenByDescending(e => e.Servico.Estado == EstadoSolicitacao.Recusado)
+                    .ThenByDescending(i => i.Servico.Id)
+                .Include("Servico.Usuarios.Usuario")
                 .ToListAsync();
 
                 return Ok(servicosGerais);
             }
 
-
-            /*
-            if(usuario.TipoConta == TipoConta.Proprietario)
-            {
-                List<Servico> servicosGerais = await _context.Servico.Where(estado => estado.Estado != EstadoSolicitacao.Finalizado)
-                .Include(usu => usu.Usuarios).ThenInclude(usua => usua.Usuario)
-                .Include(cao => cao.Caes)
-                .OrderByDescending(dt => dt.Id)
-                .ToListAsync();
-
-            return Ok(servicosGerais);
-            }
-            */
         }
 
         // Nome : Listar serviços finalizados
@@ -131,21 +101,11 @@ namespace PetFelizApi.Controllers
         {
             Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(u => u.Id == PegarIdUsuarioToken());
 
-
             List<UsuariosServico> servicosFinalizados = await _context.UsuariosServico
             .Where(usu => usu.Usuario == usuario && usu.Servico.Estado == EstadoSolicitacao.Finalizado)
             .OrderByDescending(dt => dt.Servico.Id)
-            .Include(s => s.Servico)
-            .ThenInclude(usu => usu.Usuarios)
-            .ThenInclude(u => u.Usuario)
-            .ThenInclude(sd => sd.ServicoDogWalker)
+            .Include("Servico.Usuarios.Usuario.ServicoDogWalker")
             .ToListAsync();
-            
-
-            // List<Servico> servicosFinalizados = await _context.Servico.Where(estado => estado.Estado == EstadoSolicitacao.Finalizado)
-            //     .Include(usu => usu.Usuarios).ThenInclude(usua => usua.Usuario)
-            //     .OrderByDescending(dt => dt.Id)
-            //     .ToListAsync();
 
             return Ok(servicosFinalizados);
         }
