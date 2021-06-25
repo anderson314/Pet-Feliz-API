@@ -216,6 +216,62 @@ namespace PetFelizApi.Controllers
 
         }
 
+        [HttpPatch("AtualizarUsuario")]
+        public async Task<IActionResult> atualizarUsuario(Usuario usuarioAtualizado)
+        {
+            //busca o usuário logado, junto com os cursos e informações do serviço. Isso é para evitar de 
+            //fazer outra requisição para buscar as informações do usuário atualizadas.
+             Usuario usuario = await _context.Usuario.Include(sd => sd.ServicoDogWalker)
+                .Include(infoDogwW => infoDogwW.ServicoDogWalker)
+                .ThenInclude(c => c.Cursos)
+                .FirstOrDefaultAsync(id => id.Id == PegarIdUsuarioToken());
+
+            //atribui os novos valores
+            usuario.DataNascimento = usuarioAtualizado.DataNascimento;
+            usuario.WhatsApp = usuarioAtualizado.WhatsApp;
+
+            _context.Update(usuario);
+            await _context.SaveChangesAsync();
+
+            return Ok(usuario);
+        }
+
+        [HttpPatch("AtualizarSenha/{senhaAtual}/{novaSenha}")]
+        public async Task<IActionResult> AtualizarSenha(string senhaAtual, string novaSenha)
+        {
+
+            Usuario usuario = await _context.Usuario.FirstOrDefaultAsync(i => i.Id == PegarIdUsuarioToken());
+
+            //Verifica se a senha do usuário corresponde com a atual
+            if(!VerificarPasswordHash(senhaAtual, usuario.PasswordHash, usuario.PasswordSalt))
+            {
+                return BadRequest("Senha incorreta.");
+            }
+            else
+            {
+                //caso a senha atual seja igual a nova
+                if (senhaAtual == novaSenha)
+                {
+                    return BadRequest("Sua nova senha não pode ser igual a antiga.");
+                }
+                else
+                {
+                    //Cria um novo passwordHash e passwordSalt
+                    CriarPasswordHash(novaSenha, out byte[] passwordHash, out byte[] passwordSalt);
+
+                    usuario.PasswordString = string.Empty;
+                    usuario.PasswordHash = passwordHash;
+                    usuario.PasswordSalt = passwordSalt;
+                }
+                
+                 _context.Update(usuario);
+                await _context.SaveChangesAsync();
+
+                return Ok();
+            }
+
+           
+        }
 
         [AllowAnonymous]
         //Deletar
