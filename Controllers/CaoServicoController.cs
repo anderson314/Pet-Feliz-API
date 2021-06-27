@@ -25,6 +25,7 @@ namespace PetFelizApi.Controllers
             List<CaoServico> caesServico = await _context.CaesServico
                 .Where(idS => idS.ServicoId == idServico)
                 .Include(cao => cao.Cao)
+                    .ThenInclude(p => p.Peso)
                 .ToListAsync();
 
             return Ok(caesServico);

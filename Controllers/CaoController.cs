@@ -63,6 +63,7 @@ namespace PetFelizApi.Controllers
 
             cao.Nome = caoAtualiado.Nome;
             cao.Raca = caoAtualiado.Raca;
+            cao.DataNascimento = caoAtualiado.DataNascimento;
             cao.Porte = caoAtualiado.Porte;
             cao.PesoId = caoAtualiado.PesoId;
             cao.Peso = pesoCao;
